@@ -47,12 +47,31 @@ pub struct ClientOfflineLinear {
 #[derive(Serialize)]
 pub struct ServerOfflineNonLinear {
     garbling: u64,
+    encoding: u64,
     total_duration: u64,
 }
 
 #[derive(Serialize)]
 pub struct ClientOfflineNonLinear {
     OT: u64,
+    total_duration: u64,
+}
+
+#[derive(Serialize)]
+pub struct ServerOnlineLinear {
+    server_processing_plain: u64,
+    total_duration: u64,
+}
+
+#[derive(Serialize)]
+pub struct ServerOnlineNonLinear {
+    server_encoding: u64,
+    total_duration: u64,
+}
+
+#[derive(Serialize)]
+pub struct ClientOnlineNonLinear {
+    client_gc_eval: u64,
     total_duration: u64,
 }
 

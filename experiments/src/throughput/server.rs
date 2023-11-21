@@ -44,6 +44,7 @@ pub fn nn_server<R: RngCore + CryptoRng>(
                     &mut write_stream,
                     &nns[0].1,
                     &server_states[0],
+                    1,
                 )
                 .unwrap()
             });

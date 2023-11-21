@@ -73,6 +73,7 @@ pub fn nn_client<R: RngCore + CryptoRng>(
                     &input,
                     architecture,
                     &client_state,
+                    1,
                 )
                 .unwrap();
                 start.elapsed()

@@ -400,6 +400,7 @@ where
         writer: &mut IMuxSync<W>,
         neural_network: &NeuralNetwork<AdditiveShare<P>, FixedPoint<P>>,
         state: &ServerState<P>,
+        batch_id: u16,
     ) -> Result<(), bincode::Error> {
         let (first_layer_in_dims, first_layer_out_dims) = {
             let layer = neural_network.layers.first().unwrap();
@@ -416,6 +417,7 @@ where
         let mut next_layer_input = Output::zeros(first_layer_out_dims);
         let mut next_layer_derandomizer = Input::zeros(first_layer_in_dims);
         let start_time = timer_start!(|| "Server online phase");
+        let mut conv_id = 0;
         for (i, layer) in neural_network.layers.iter().enumerate() {
             match layer {
                 Layer::NLL(NonLinearLayer::ReLU(dims)) => {
@@ -430,6 +432,7 @@ where
                         writer,
                         &next_layer_input.as_slice().unwrap(),
                         layer_encoders,
+                        batch_id,
                     )?;
                     let relu_output_randomizers = state.relu_output_randomizers
                         [num_consumed_relus..(num_consumed_relus + layer_size)]
@@ -479,6 +482,7 @@ where
                                 *l_r += &inp.inner.inner;
                             });
                     }
+                    conv_id += 1;
                     next_layer_input = Output::zeros(layer.output_dimensions());
                     LinearProtocol::online_server_protocol(
                         reader,
@@ -486,6 +490,8 @@ where
                         layer_randomizer,
                         &next_layer_derandomizer,
                         &mut next_layer_input,
+                        conv_id,
+                        batch_id,
                     )?;
                     next_layer_derandomizer = Output::zeros(layer.output_dimensions());
                     // Since linear operations involve multiplications
@@ -511,6 +517,7 @@ where
         input: &Input<FixedPoint<P>>,
         architecture: &NeuralArchitecture<AdditiveShare<P>, FixedPoint<P>>,
         state: &ClientState<P>,
+        batch_id: u16,
     ) -> Result<Output<FixedPoint<P>>, bincode::Error> {
         let first_layer_in_dims = {
             let layer = architecture.layers.first().unwrap();
@@ -568,6 +575,7 @@ where
                                 &layer_client_labels,    // Labels for layer
                                 &layer_circuits,         // circuits for layer.
                                 &next_layer_randomizers, // circuits for layer.
+                                batch_id,
                             )?;
                             next_layer_input = ndarray::Array1::from_iter(output)
                                 .into_shape(dims.output_dimensions())

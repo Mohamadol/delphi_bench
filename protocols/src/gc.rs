@@ -28,7 +28,9 @@ use std::{
 
 use crate::csv_timing::*;
 use crate::ClientOfflineNonLinear;
+use crate::ClientOnlineNonLinear;
 use crate::ServerOfflineNonLinear;
+use crate::ServerOnlineNonLinear;
 use std::time::Instant;
 
 #[derive(Default)]
@@ -94,11 +96,12 @@ where
     ) -> Result<ServerState<P>, bincode::Error> {
         let mut timing = ServerOfflineNonLinear {
             garbling: 0,
+            encoding: 0,
             total_duration: 0,
         };
-        let total_time = Instant::now();
 
         let start_time = timer_start!(|| "ReLU offline protocol");
+        let total_time = Instant::now();
 
         let garbling_time = Instant::now();
         let mut gc_s = Vec::with_capacity(number_of_relus);
@@ -119,6 +122,7 @@ where
         timer_end!(garble_time);
 
         let encode_time = timer_start!(|| "Encoding inputs");
+        let encoding_time = Instant::now();
         let num_garbler_inputs = c.num_garbler_inputs();
         let num_evaluator_inputs = c.num_evaluator_inputs();
 
@@ -152,6 +156,7 @@ where
                 });
         }
         timer_end!(encode_time);
+        timing.encoding += encoding_time.elapsed().as_micros() as u64;
 
         let send_gc_time = timer_start!(|| "Sending GCs");
         let randomizer_label_per_relu = if number_of_relus == 0 {
@@ -210,10 +215,11 @@ where
             OT: 0,
             total_duration: 0,
         };
-        let total_time = Instant::now();
-
         use fancy_garbling::util::*;
         let start_time = timer_start!(|| "ReLU offline protocol");
+
+        let total_time = Instant::now();
+
         let p = u128::from(<<P::Field as PrimeField>::Params>::MODULUS.0);
         let field_size = crypto_primitives::gc::num_bits(p);
 
@@ -286,12 +292,20 @@ where
         writer: &mut IMuxSync<W>,
         shares: &[AdditiveShare<P>],
         encoders: &[Encoder],
+        batch_id: u16,
     ) -> Result<(), bincode::Error> {
+        let mut timing = ServerOnlineNonLinear {
+            server_encoding: 0,
+            total_duration: 0,
+        };
+
         let p = u128::from(u64::from(P::Field::characteristic()));
 
         let start_time = timer_start!(|| "ReLU online protocol");
         let encoding_time = timer_start!(|| "Encoding inputs");
 
+        let total_time = Instant::now();
+        let server_encoding = Instant::now();
         let field_size = (p.next_power_of_two() * 2).trailing_zeros() as usize;
         let wires = shares
             .iter()
@@ -303,12 +317,28 @@ where
             .map(|(share_bits, encoder)| encoder.encode_garbler_inputs(&share_bits))
             .collect::<Vec<Vec<_>>>();
         timer_end!(encoding_time);
+        timing.server_encoding += server_encoding.elapsed().as_micros() as u64;
 
         let send_time = timer_start!(|| "Sending inputs");
         let sent_message = ServerLabelMsgSend::new(wires.as_slice());
+
         timer_end!(send_time);
         timer_end!(start_time);
-        crate::bytes::serialize(writer, &sent_message)
+
+        let res = crate::bytes::serialize(writer, &sent_message);
+
+        timing.total_duration += total_time.elapsed().as_micros() as u64;
+        let file_name = csv_file_name(
+            "resnet50",
+            "server",
+            "online",
+            "non_linear",
+            0 as u64,
+            batch_id as u64,
+        );
+        write_to_csv(&timing, &file_name);
+
+        res
     }
 
     /// Outputs shares for the next round's input.
@@ -319,15 +349,22 @@ where
         client_input_wires: &[Wire],
         evaluators: &[GarbledCircuit],
         next_layer_randomizers: &[P::Field],
+        batch_id: u16,
     ) -> Result<Vec<AdditiveShare<P>>, bincode::Error> {
+        let mut timing = ClientOnlineNonLinear {
+            client_gc_eval: 0,
+            total_duration: 0,
+        };
         let start_time = timer_start!(|| "ReLU online protocol");
-
         let rcv_time = timer_start!(|| "Receiving inputs");
+
+        let total_time = Instant::now();
         let in_msg: ClientLabelMsgRcv = crate::bytes::deserialize(reader)?;
         let mut garbler_wires = in_msg.msg();
         timer_end!(rcv_time);
 
         let eval_time = timer_start!(|| "Evaluating GCs");
+        let gc_eval_time = Instant::now();
         let c = make_relu::<P>();
         let num_evaluator_inputs = c.num_evaluator_inputs();
         let num_garbler_inputs = c.num_garbler_inputs();
@@ -357,8 +394,23 @@ where
             .iter_mut()
             .zip(next_layer_randomizers)
             .for_each(|(s, r)| *s = FixedPoint::<P>::randomize_local_share(s, r));
+
+        timing.client_gc_eval += gc_eval_time.elapsed().as_micros() as u64;
+        timing.total_duration += total_time.elapsed().as_micros() as u64;
+
         timer_end!(eval_time);
         timer_end!(start_time);
+
+        let file_name = csv_file_name(
+            "resnet50",
+            "client",
+            "online",
+            "non_linear",
+            0 as u64,
+            batch_id as u64,
+        );
+        write_to_csv(&timing, &file_name);
+
         Ok(results)
     }
 }

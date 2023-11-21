@@ -22,6 +22,7 @@ use std::{
 use crate::csv_timing::*;
 use crate::ClientOfflineLinear;
 use crate::ServerOfflineLinear;
+use crate::ServerOnlineLinear;
 use std::time::Instant;
 
 pub struct LinearProtocol<P: FixedPointParameters> {
@@ -107,10 +108,12 @@ where
         let send_time = timer_start!(|| "Sending result");
         let sent_message = OfflineServerMsgSend::new(&enc_result_vec);
         crate::bytes::serialize(writer, &sent_message)?;
+
+        timing.total_duration += total_time.elapsed().as_micros() as u64;
+
         timer_end!(send_time);
         timer_end!(start_time);
 
-        timing.total_duration += total_time.elapsed().as_micros() as u64;
         let file_name = csv_file_name(
             "resnet50",
             "server",
@@ -194,10 +197,11 @@ where
         let layer_randomness = ndarray::Array1::from_vec(layer_randomness)
             .into_shape(input_dims)
             .unwrap();
+        timing.total_duration += total_time.elapsed().as_micros() as u64;
+
         timer_end!(post_time);
         timer_end!(start_time);
 
-        timing.total_duration += total_time.elapsed().as_micros() as u64;
         let file_name = csv_file_name(
             "resnet50",
             "client",
@@ -240,7 +244,15 @@ where
         output_rerandomizer: &Output<P::Field>,
         input_derandomizer: &Input<P::Field>,
         output: &mut Output<AdditiveShare<P>>,
+        layer_id: u16,
+        batch_id: u16,
     ) -> Result<(), bincode::Error> {
+        let mut timing = ServerOnlineLinear {
+            server_processing_plain: 0,
+            total_duration: 0,
+        };
+        let total_time = Instant::now();
+
         let start = timer_start!(|| "Linear online protocol");
         // Receive client share and compute layer if conv or fc
         let mut input: Input<AdditiveShare<P>> = match &layer {
@@ -250,12 +262,27 @@ where
             },
             _ => Input::zeros(input_derandomizer.dim()),
         };
+
+        let server_processing = Instant::now();
         input.randomize_local_share(input_derandomizer);
         *output = layer.evaluate(&input);
         output.zip_mut_with(output_rerandomizer, |out, s| {
             *out = FixedPoint::randomize_local_share(out, s)
         });
+        timing.server_processing_plain += server_processing.elapsed().as_micros() as u64;
+        timing.total_duration += total_time.elapsed().as_micros() as u64;
         timer_end!(start);
+
+        let file_name = csv_file_name(
+            "resnet50",
+            "server",
+            "online",
+            "linear",
+            layer_id.into(),
+            batch_id.into(),
+        );
+        write_to_csv(&timing, &file_name);
+
         Ok(())
     }
 }

@@ -109,6 +109,7 @@ pub fn nn_client<R: RngCore + CryptoRng>(
                 &input,
                 &architecture,
                 &client_state,
+                batch_id,
             )
             .unwrap(),
             reader.count(),
@@ -145,8 +146,14 @@ pub fn nn_server<R: RngCore + CryptoRng>(
     let (_, online_read, online_write) = {
         let (mut reader, mut writer) = server_connect(server_addr);
         (
-            NNProtocol::online_server_protocol(&mut reader, &mut writer, &nn, &server_state)
-                .unwrap(),
+            NNProtocol::online_server_protocol(
+                &mut reader,
+                &mut writer,
+                &nn,
+                &server_state,
+                batch_id,
+            )
+            .unwrap(),
             reader.count(),
             writer.count(),
         )
