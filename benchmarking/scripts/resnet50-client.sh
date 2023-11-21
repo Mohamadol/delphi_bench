@@ -9,7 +9,7 @@ mkdir -p $OUTDIR
 for i in {1..8}
 do
    echo "Starting instance $i in the background"
-    $PROGRAM $i > "${OUTIDR}/_batch_${i}.out" 2>&1 &
+    $PROGRAM $i > "${OUTDIR}/_batch_${i}.out" 2>&1 &
 done
 
 # Wait for all background jobs to finish
