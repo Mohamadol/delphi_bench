@@ -2,7 +2,7 @@
 
 network="resnet50"
 PROGRAM="/mnt/mohammad/delphi/rust/target/release/${network}-server"
-OUTDIR="/mnt/mohammad/delphi/rust/benchmarking/outputs/${network}"
+OUTDIR="/mnt/mohammad/delphi/rust/benchmarking/outputs/${network}/server"
 mkdir -p $OUTDIR
 
 # Start each instance in the background
