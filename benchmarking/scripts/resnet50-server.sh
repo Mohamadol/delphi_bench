@@ -1,13 +1,15 @@
 #!/bin/bash
 
-# Program name or path
-PROGRAM="/mnt/mohammad/delphi/rust/target/release/resnet50-server"
+network="resnet50"
+PROGRAM="/mnt/mohammad/delphi/rust/target/release/${network}-server"
+OUTDIR="/mnt/mohammad/delphi/rust/benchmarking/outputs/${network}"
+mkdir -p $OUTDIR
 
 # Start each instance in the background
 for i in {1..8}
 do
    echo "Starting instance $i in the background"
-   $PROGRAM $i &  # Start in the background
+    $PROGRAM $i > "${OUTIDR}/_batch_${i}.out" 2>&1 &
 done
 
 # Wait for all background jobs to finish
