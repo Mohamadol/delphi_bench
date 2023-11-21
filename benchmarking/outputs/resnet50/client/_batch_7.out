@@ -1,491 +1,491 @@
 sending client request for batch ID 7 and port 8008
 Start:   Generating keys
-End:     Generating keys............................................................623.498ms
+End:     Generating keys............................................................588.202ms
 Start:   Sending keys
-End:     Sending keys...............................................................578.533ms
+End:     Sending keys...............................................................566.335ms
 Start:   Client offline phase
 ··Start:   Linear layers offline phase
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................289.232ms
+······End:     Client preprocessing.................................................271.48ms
 ······Start:   Sending input
-······End:     Sending input........................................................49.344ms
+······End:     Sending input........................................................46.550ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................20.675s
+······End:     Receiving Result.....................................................20.851s
 ······Start:   Post-processing
-······End:     Post-processing......................................................71.479ms
-····End:     Linear offline protocol................................................21.85s
+······End:     Post-processing......................................................61.437ms
+····End:     Linear offline protocol................................................21.230s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................3.557s
+······End:     Client preprocessing.................................................3.262s
 ······Start:   Sending input
-······End:     Sending input........................................................4.338s
+······End:     Sending input........................................................4.783s
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................69.790s
+······End:     Receiving Result.....................................................71.421s
 ······Start:   Post-processing
-······End:     Post-processing......................................................70.454ms
-····End:     Linear offline protocol................................................77.757s
+······End:     Post-processing......................................................67.96ms
+····End:     Linear offline protocol................................................79.534s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................222.381ms
+······End:     Client preprocessing.................................................201.803ms
 ······Start:   Sending input
-······End:     Sending input........................................................44.157ms
+······End:     Sending input........................................................39.457ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................71.79s
+······End:     Receiving Result.....................................................70.868s
 ······Start:   Post-processing
-······End:     Post-processing......................................................276.956ms
-····End:     Linear offline protocol................................................71.623s
+······End:     Post-processing......................................................284.161ms
+····End:     Linear offline protocol................................................71.394s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................1.108s
+······End:     Client preprocessing.................................................1.67s
 ······Start:   Sending input
-······End:     Sending input........................................................872.535ms
+······End:     Sending input........................................................869.311ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................54.949s
+······End:     Receiving Result.....................................................56.37s
 ······Start:   Post-processing
-······End:     Post-processing......................................................77.195ms
-····End:     Linear offline protocol................................................57.8s
+······End:     Post-processing......................................................67.397ms
+····End:     Linear offline protocol................................................58.42s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................2.387s
+······End:     Client preprocessing.................................................2.191s
 ······Start:   Sending input
-······End:     Sending input........................................................1.923s
+······End:     Sending input........................................................2.225s
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................69.570s
+······End:     Receiving Result.....................................................71.199s
 ······Start:   Post-processing
-······End:     Post-processing......................................................69.595ms
-····End:     Linear offline protocol................................................73.951s
+······End:     Post-processing......................................................61.772ms
+····End:     Linear offline protocol................................................75.678s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................221.873ms
+······End:     Client preprocessing.................................................205.206ms
 ······Start:   Sending input
-······End:     Sending input........................................................33.762ms
+······End:     Sending input........................................................29.967ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................55.826s
+······End:     Receiving Result.....................................................56.856s
 ······Start:   Post-processing
-······End:     Post-processing......................................................282.738ms
-····End:     Linear offline protocol................................................56.365s
+······End:     Post-processing......................................................275.803ms
+····End:     Linear offline protocol................................................57.367s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................1.109s
+······End:     Client preprocessing.................................................1.12s
 ······Start:   Sending input
-······End:     Sending input........................................................872.857ms
+······End:     Sending input........................................................850.613ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................54.943s
+······End:     Receiving Result.....................................................55.974s
 ······Start:   Post-processing
-······End:     Post-processing......................................................73.977ms
-····End:     Linear offline protocol................................................57.0s
+······End:     Post-processing......................................................67.862ms
+····End:     Linear offline protocol................................................57.905s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................2.390s
+······End:     Client preprocessing.................................................2.147s
 ······Start:   Sending input
-······End:     Sending input........................................................1.613s
+······End:     Sending input........................................................1.787s
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................69.597s
+······End:     Receiving Result.....................................................71.249s
 ······Start:   Post-processing
-······End:     Post-processing......................................................69.939ms
-····End:     Linear offline protocol................................................73.671s
+······End:     Post-processing......................................................59.760ms
+····End:     Linear offline protocol................................................75.244s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................211.884ms
+······End:     Client preprocessing.................................................187.787ms
 ······Start:   Sending input
-······End:     Sending input........................................................33.812ms
+······End:     Sending input........................................................32.126ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................55.909s
+······End:     Receiving Result.....................................................56.880s
 ······Start:   Post-processing
-······End:     Post-processing......................................................277.219ms
-····End:     Linear offline protocol................................................56.432s
+······End:     Post-processing......................................................256.89ms
+····End:     Linear offline protocol................................................57.356s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................1.98s
+······End:     Client preprocessing.................................................992.257ms
 ······Start:   Sending input
-······End:     Sending input........................................................1.77s
+······End:     Sending input........................................................1.28s
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................126.408s
+······End:     Receiving Result.....................................................126.580s
 ······Start:   Post-processing
-······End:     Post-processing......................................................139.74ms
-····End:     Linear offline protocol................................................128.723s
+······End:     Post-processing......................................................125.451ms
+····End:     Linear offline protocol................................................128.727s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................1.174s
+······End:     Client preprocessing.................................................1.87s
 ······Start:   Sending input
-······End:     Sending input........................................................1.114s
+······End:     Sending input........................................................1.41s
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................74.411s
+······End:     Receiving Result.....................................................76.377s
 ······Start:   Post-processing
-······End:     Post-processing......................................................34.196ms
-····End:     Linear offline protocol................................................76.734s
+······End:     Post-processing......................................................29.769ms
+····End:     Linear offline protocol................................................78.536s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................103.925ms
+······End:     Client preprocessing.................................................90.470ms
 ······Start:   Sending input
-······End:     Sending input........................................................17.265ms
+······End:     Sending input........................................................15.301ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................70.919s
+······End:     Receiving Result.....................................................72.184s
 ······Start:   Post-processing
-······End:     Post-processing......................................................138.455ms
-····End:     Linear offline protocol................................................71.179s
+······End:     Post-processing......................................................125.43ms
+····End:     Linear offline protocol................................................72.415s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................534.965ms
+······End:     Client preprocessing.................................................489.66ms
 ······Start:   Sending input
-······End:     Sending input........................................................89.878ms
+······End:     Sending input........................................................81.528ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................70.248s
+······End:     Receiving Result.....................................................71.438s
 ······Start:   Post-processing
-······End:     Post-processing......................................................35.769ms
-····End:     Linear offline protocol................................................70.908s
+······End:     Post-processing......................................................30.414ms
+····End:     Linear offline protocol................................................72.39s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................1.182s
+······End:     Client preprocessing.................................................1.72s
 ······Start:   Sending input
-······End:     Sending input........................................................1.124s
+······End:     Sending input........................................................1.51s
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................74.421s
+······End:     Receiving Result.....................................................76.378s
 ······Start:   Post-processing
-······End:     Post-processing......................................................34.522ms
-····End:     Linear offline protocol................................................76.762s
+······End:     Post-processing......................................................29.254ms
+····End:     Linear offline protocol................................................78.531s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................102.832ms
+······End:     Client preprocessing.................................................89.484ms
 ······Start:   Sending input
-······End:     Sending input........................................................17.217ms
+······End:     Sending input........................................................15.456ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................70.892s
+······End:     Receiving Result.....................................................72.178s
 ······Start:   Post-processing
-······End:     Post-processing......................................................138.473ms
-····End:     Linear offline protocol................................................71.151s
+······End:     Post-processing......................................................124.659ms
+····End:     Linear offline protocol................................................72.407s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................530.266ms
+······End:     Client preprocessing.................................................499.975ms
 ······Start:   Sending input
-······End:     Sending input........................................................89.177ms
+······End:     Sending input........................................................80.581ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................70.250s
+······End:     Receiving Result.....................................................71.423s
 ······Start:   Post-processing
-······End:     Post-processing......................................................35.925ms
-····End:     Linear offline protocol................................................70.905s
+······End:     Post-processing......................................................30.947ms
+····End:     Linear offline protocol................................................72.34s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................1.180s
+······End:     Client preprocessing.................................................1.74s
 ······Start:   Sending input
-······End:     Sending input........................................................1.104s
+······End:     Sending input........................................................1.52s
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................74.514s
+······End:     Receiving Result.....................................................76.367s
 ······Start:   Post-processing
-······End:     Post-processing......................................................34.13ms
-····End:     Linear offline protocol................................................76.833s
+······End:     Post-processing......................................................30.72ms
+····End:     Linear offline protocol................................................78.524s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................103.430ms
+······End:     Client preprocessing.................................................90.935ms
 ······Start:   Sending input
-······End:     Sending input........................................................17.512ms
+······End:     Sending input........................................................15.316ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................70.967s
+······End:     Receiving Result.....................................................72.159s
 ······Start:   Post-processing
-······End:     Post-processing......................................................138.829ms
-····End:     Linear offline protocol................................................71.227s
+······End:     Post-processing......................................................122.253ms
+····End:     Linear offline protocol................................................72.388s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................533.641ms
+······End:     Client preprocessing.................................................493.645ms
 ······Start:   Sending input
-······End:     Sending input........................................................90.735ms
+······End:     Sending input........................................................81.282ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................70.233s
+······End:     Receiving Result.....................................................71.439s
 ······Start:   Post-processing
-······End:     Post-processing......................................................35.716ms
-····End:     Linear offline protocol................................................70.893s
+······End:     Post-processing......................................................30.895ms
+····End:     Linear offline protocol................................................72.45s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................1.185s
+······End:     Client preprocessing.................................................1.68s
 ······Start:   Sending input
-······End:     Sending input........................................................1.101s
+······End:     Sending input........................................................1.67s
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................74.514s
+······End:     Receiving Result.....................................................76.385s
 ······Start:   Post-processing
-······End:     Post-processing......................................................34.325ms
-····End:     Linear offline protocol................................................76.835s
+······End:     Post-processing......................................................29.515ms
+····End:     Linear offline protocol................................................78.551s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................103.869ms
+······End:     Client preprocessing.................................................87.993ms
 ······Start:   Sending input
-······End:     Sending input........................................................17.376ms
+······End:     Sending input........................................................15.89ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................70.967s
+······End:     Receiving Result.....................................................72.221s
 ······Start:   Post-processing
-······End:     Post-processing......................................................139.203ms
-····End:     Linear offline protocol................................................71.227s
+······End:     Post-processing......................................................122.369ms
+····End:     Linear offline protocol................................................72.446s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................548.140ms
+······End:     Client preprocessing.................................................491.368ms
 ······Start:   Sending input
-······End:     Sending input........................................................67.151ms
+······End:     Sending input........................................................57.645ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................140.725s
+······End:     Receiving Result.....................................................143.86s
 ······Start:   Post-processing
-······End:     Post-processing......................................................70.239ms
-····End:     Linear offline protocol................................................141.411s
+······End:     Post-processing......................................................60.353ms
+····End:     Linear offline protocol................................................143.696s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................584.722ms
+······End:     Client preprocessing.................................................532.785ms
 ······Start:   Sending input
-······End:     Sending input........................................................100.286ms
+······End:     Sending input........................................................92.168ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................82.159s
+······End:     Receiving Result.....................................................83.958s
 ······Start:   Post-processing
-······End:     Post-processing......................................................17.324ms
-····End:     Linear offline protocol................................................82.862s
+······End:     Post-processing......................................................15.69ms
+····End:     Linear offline protocol................................................84.598s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................52.750ms
+······End:     Client preprocessing.................................................44.509ms
 ······Start:   Sending input
-······End:     Sending input........................................................9.165ms
+······End:     Sending input........................................................8.6ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................96.899s
+······End:     Receiving Result.....................................................98.69s
 ······Start:   Post-processing
-······End:     Post-processing......................................................69.743ms
-····End:     Linear offline protocol................................................97.31s
+······End:     Post-processing......................................................60.180ms
+····End:     Linear offline protocol................................................98.182s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................222.50ms
+······End:     Client preprocessing.................................................194.663ms
 ······Start:   Sending input
-······End:     Sending input........................................................44.221ms
+······End:     Sending input........................................................38.963ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................96.286s
+······End:     Receiving Result.....................................................97.415s
 ······Start:   Post-processing
-······End:     Post-processing......................................................18.73ms
-····End:     Linear offline protocol................................................96.570s
+······End:     Post-processing......................................................15.433ms
+····End:     Linear offline protocol................................................97.664s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................533.349ms
+······End:     Client preprocessing.................................................471.709ms
 ······Start:   Sending input
-······End:     Sending input........................................................99.992ms
+······End:     Sending input........................................................90.464ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................82.463s
+······End:     Receiving Result.....................................................84.387s
 ······Start:   Post-processing
-······End:     Post-processing......................................................17.282ms
-····End:     Linear offline protocol................................................83.114s
+······End:     Post-processing......................................................15.68ms
+····End:     Linear offline protocol................................................84.964s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................52.57ms
+······End:     Client preprocessing.................................................44.701ms
 ······Start:   Sending input
-······End:     Sending input........................................................9.194ms
+······End:     Sending input........................................................8.136ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................96.965s
+······End:     Receiving Result.....................................................98.155s
 ······Start:   Post-processing
-······End:     Post-processing......................................................68.485ms
-····End:     Linear offline protocol................................................97.94s
+······End:     Post-processing......................................................60.231ms
+····End:     Linear offline protocol................................................98.268s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................222.59ms
+······End:     Client preprocessing.................................................191.671ms
 ······Start:   Sending input
-······End:     Sending input........................................................34.127ms
+······End:     Sending input........................................................29.281ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................96.308s
+······End:     Receiving Result.....................................................97.458s
 ······Start:   Post-processing
-······End:     Post-processing......................................................18.206ms
-····End:     Linear offline protocol................................................96.582s
+······End:     Post-processing......................................................16.281ms
+····End:     Linear offline protocol................................................97.695s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................557.110ms
+······End:     Client preprocessing.................................................498.123ms
 ······Start:   Sending input
-······End:     Sending input........................................................102.638ms
+······End:     Sending input........................................................90.604ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................82.454s
+······End:     Receiving Result.....................................................84.350s
 ······Start:   Post-processing
-······End:     Post-processing......................................................17.142ms
-····End:     Linear offline protocol................................................83.131s
+······End:     Post-processing......................................................14.864ms
+····End:     Linear offline protocol................................................84.954s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................51.345ms
+······End:     Client preprocessing.................................................44.120ms
 ······Start:   Sending input
-······End:     Sending input........................................................8.995ms
+······End:     Sending input........................................................7.930ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................97.328s
+······End:     Receiving Result.....................................................98.145s
 ······Start:   Post-processing
-······End:     Post-processing......................................................68.216ms
-····End:     Linear offline protocol................................................97.457s
+······End:     Post-processing......................................................59.542ms
+····End:     Linear offline protocol................................................98.257s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................220.557ms
+······End:     Client preprocessing.................................................194.385ms
 ······Start:   Sending input
-······End:     Sending input........................................................36.6ms
+······End:     Sending input........................................................31.550ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................96.557s
+······End:     Receiving Result.....................................................97.595s
 ······Start:   Post-processing
-······End:     Post-processing......................................................17.909ms
-····End:     Linear offline protocol................................................96.831s
+······End:     Post-processing......................................................15.564ms
+····End:     Linear offline protocol................................................97.836s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................575.334ms
+······End:     Client preprocessing.................................................490.401ms
 ······Start:   Sending input
-······End:     Sending input........................................................99.702ms
+······End:     Sending input........................................................87.858ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................82.654s
+······End:     Receiving Result.....................................................84.358s
 ······Start:   Post-processing
-······End:     Post-processing......................................................17.301ms
-····End:     Linear offline protocol................................................83.347s
+······End:     Post-processing......................................................15.110ms
+····End:     Linear offline protocol................................................84.951s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................51.688ms
+······End:     Client preprocessing.................................................45.177ms
 ······Start:   Sending input
-······End:     Sending input........................................................9.317ms
+······End:     Sending input........................................................8.212ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................97.200s
+······End:     Receiving Result.....................................................98.112s
 ······Start:   Post-processing
-······End:     Post-processing......................................................69.144ms
-····End:     Linear offline protocol................................................97.330s
+······End:     Post-processing......................................................60.304ms
+····End:     Linear offline protocol................................................98.226s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................220.916ms
+······End:     Client preprocessing.................................................191.358ms
 ······Start:   Sending input
-······End:     Sending input........................................................43.962ms
+······End:     Sending input........................................................33.410ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................96.397s
+······End:     Receiving Result.....................................................97.558s
 ······Start:   Post-processing
-······End:     Post-processing......................................................18.408ms
-····End:     Linear offline protocol................................................96.680s
+······End:     Post-processing......................................................15.516ms
+····End:     Linear offline protocol................................................97.799s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................575.788ms
+······End:     Client preprocessing.................................................488.12ms
 ······Start:   Sending input
-······End:     Sending input........................................................99.588ms
+······End:     Sending input........................................................88.385ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................82.589s
+······End:     Receiving Result.....................................................84.396s
 ······Start:   Post-processing
-······End:     Post-processing......................................................17.192ms
-····End:     Linear offline protocol................................................83.282s
+······End:     Post-processing......................................................15.767ms
+····End:     Linear offline protocol................................................84.988s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................51.256ms
+······End:     Client preprocessing.................................................44.345ms
 ······Start:   Sending input
-······End:     Sending input........................................................9.67ms
+······End:     Sending input........................................................8.119ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................97.249s
+······End:     Receiving Result.....................................................98.45s
 ······Start:   Post-processing
-······End:     Post-processing......................................................68.80ms
-····End:     Linear offline protocol................................................97.378s
+······End:     Post-processing......................................................59.585ms
+····End:     Linear offline protocol................................................98.158s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................221.31ms
+······End:     Client preprocessing.................................................198.961ms
 ······Start:   Sending input
-······End:     Sending input........................................................33.633ms
+······End:     Sending input........................................................35.343ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................96.408s
+······End:     Receiving Result.....................................................97.496s
 ······Start:   Post-processing
-······End:     Post-processing......................................................17.980ms
-····End:     Linear offline protocol................................................96.680s
+······End:     Post-processing......................................................15.650ms
+····End:     Linear offline protocol................................................97.746s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................577.965ms
+······End:     Client preprocessing.................................................486.650ms
 ······Start:   Sending input
-······End:     Sending input........................................................101.323ms
+······End:     Sending input........................................................88.160ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................82.609s
+······End:     Receiving Result.....................................................84.382s
 ······Start:   Post-processing
-······End:     Post-processing......................................................17.306ms
-····End:     Linear offline protocol................................................83.306s
+······End:     Post-processing......................................................15.310ms
+····End:     Linear offline protocol................................................84.973s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................51.889ms
+······End:     Client preprocessing.................................................44.958ms
 ······Start:   Sending input
-······End:     Sending input........................................................9.227ms
+······End:     Sending input........................................................8.231ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................97.35s
+······End:     Receiving Result.....................................................98.271s
 ······Start:   Post-processing
-······End:     Post-processing......................................................68.406ms
-····End:     Linear offline protocol................................................97.164s
+······End:     Post-processing......................................................60.573ms
+····End:     Linear offline protocol................................................98.385s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................220.825ms
+······End:     Client preprocessing.................................................193.997ms
 ······Start:   Sending input
-······End:     Sending input........................................................44.339ms
+······End:     Sending input........................................................31.699ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................193.160s
+······End:     Receiving Result.....................................................195.433s
 ······Start:   Post-processing
-······End:     Post-processing......................................................34.551ms
-····End:     Linear offline protocol................................................193.460s
+······End:     Post-processing......................................................29.753ms
+····End:     Linear offline protocol................................................195.689s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................252.569ms
+······End:     Client preprocessing.................................................208.53ms
 ······Start:   Sending input
-······End:     Sending input........................................................38.73ms
+······End:     Sending input........................................................34.985ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................89.768s
+······End:     Receiving Result.....................................................91.613s
 ······Start:   Post-processing
-······End:     Post-processing......................................................8.800ms
-····End:     Linear offline protocol................................................90.67s
+······End:     Post-processing......................................................7.946ms
+····End:     Linear offline protocol................................................91.864s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................25.883ms
+······End:     Client preprocessing.................................................22.714ms
 ······Start:   Sending input
-······End:     Sending input........................................................5.11ms
+······End:     Sending input........................................................4.606ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................125.579s
+······End:     Receiving Result.....................................................126.780s
 ······Start:   Post-processing
-······End:     Post-processing......................................................34.214ms
-····End:     Linear offline protocol................................................125.644s
+······End:     Post-processing......................................................30.77ms
+····End:     Linear offline protocol................................................126.837s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................109.773ms
+······End:     Client preprocessing.................................................90.735ms
 ······Start:   Sending input
-······End:     Sending input........................................................22.570ms
+······End:     Sending input........................................................15.462ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................125.91s
+······End:     Receiving Result.....................................................126.244s
 ······Start:   Post-processing
-······End:     Post-processing......................................................9.59ms
-····End:     Linear offline protocol................................................125.232s
+······End:     Post-processing......................................................8.44ms
+····End:     Linear offline protocol................................................126.359s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................249.54ms
+······End:     Client preprocessing.................................................210.952ms
 ······Start:   Sending input
-······End:     Sending input........................................................48.991ms
+······End:     Sending input........................................................33.181ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................90.117s
+······End:     Receiving Result.....................................................91.849s
 ······Start:   Post-processing
-······End:     Post-processing......................................................8.714ms
-····End:     Linear offline protocol................................................90.424s
+······End:     Post-processing......................................................7.982ms
+····End:     Linear offline protocol................................................92.101s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................25.611ms
+······End:     Client preprocessing.................................................22.712ms
 ······Start:   Sending input
-······End:     Sending input........................................................4.923ms
+······End:     Sending input........................................................4.576ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................125.796s
+······End:     Receiving Result.....................................................126.780s
 ······Start:   Post-processing
-······End:     Post-processing......................................................34.32ms
-····End:     Linear offline protocol................................................125.861s
+······End:     Post-processing......................................................30.44ms
+····End:     Linear offline protocol................................................126.838s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................103.500ms
+······End:     Client preprocessing.................................................89.936ms
 ······Start:   Sending input
-······End:     Sending input........................................................17.439ms
+······End:     Sending input........................................................15.63ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................125.235s
+······End:     Receiving Result.....................................................126.289s
 ······Start:   Post-processing
-······End:     Post-processing......................................................9.101ms
-····End:     Linear offline protocol................................................125.366s
+······End:     Post-processing......................................................7.978ms
+····End:     Linear offline protocol................................................126.402s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................248.119ms
+······End:     Client preprocessing.................................................215.839ms
 ······Start:   Sending input
-······End:     Sending input........................................................37.889ms
+······End:     Sending input........................................................50.297ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................90.136s
+······End:     Receiving Result.....................................................91.778s
 ······Start:   Post-processing
-······End:     Post-processing......................................................8.761ms
-····End:     Linear offline protocol................................................90.431s
+······End:     Post-processing......................................................8.42ms
+····End:     Linear offline protocol................................................92.53s
 ····Start:   Linear offline protocol
 ······Start:   Client preprocessing
-······End:     Client preprocessing.................................................25.984ms
+······End:     Client preprocessing.................................................23.378ms
 ······Start:   Sending input
-······End:     Sending input........................................................4.918ms
+······End:     Sending input........................................................4.694ms
 ······Start:   Receiving Result
-······End:     Receiving Result.....................................................127.124s
+······End:     Receiving Result.....................................................127.360s
 ······Start:   Post-processing
-······End:     Post-processing......................................................33.778ms
-····End:     Linear offline protocol................................................127.189s
-··End:     Linear layers offline phase..............................................4279.518s
+······End:     Post-processing......................................................29.521ms
+····End:     Linear offline protocol................................................127.418s
+··End:     Linear layers offline phase..............................................4339.608s
 ··Start:   ReLU layers offline phase with 8153600 ReLUs
 ····Start:   ReLU offline protocol
 ······Start:   Receiving GCs
