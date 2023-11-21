@@ -16,8 +16,7 @@ pub fn construct_resnet50_model<R: RngCore + CryptoRng>(
 
     // ---------------- these are the ReLU layers id ----------------
     let mut relu_layers = Vec::new();
-    relu_layers.push(1);
-    for l in 0..1 {
+    for l in 0..47 {
         relu_layers.push(2 * l + 1);
     }
 
@@ -34,7 +33,7 @@ pub fn construct_resnet50_model<R: RngCore + CryptoRng>(
     };
 
     // ---------------- Conv Layers ----------------
-    for conv_id in 2..4 {
+    for conv_id in 1..48 {
         match conv_id {
             1 => {
                 let k: usize = 64;
@@ -182,6 +181,105 @@ pub fn construct_resnet50_model<R: RngCore + CryptoRng>(
                 network.layers.push(Layer::LL(conv_1));
                 add_activation_layer(&mut network, &relu_layers);
             },
+
+            24 | 27 | 30 | 33 | 36 | 39 => {
+                let k: usize = 256;
+                let c: usize = 256;
+                let p: usize = 14;
+                let r: usize = 3;
+                let stride: usize = 1;
+                let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
+                let kernel_dims: (usize, usize, usize, usize) = (k, c, r, r);
+                let (conv_1, _) =
+                    sample_conv_layer(vs, input_dims, kernel_dims, stride, Padding::Valid, rng);
+                network.layers.push(Layer::LL(conv_1));
+                add_activation_layer(&mut network, &relu_layers);
+            },
+
+            25 | 28 | 31 | 34 | 37 | 40 => {
+                let k: usize = 1024;
+                let c: usize = 256;
+                let p: usize = 14;
+                let r: usize = 1;
+                let stride: usize = 1;
+                let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
+                let kernel_dims: (usize, usize, usize, usize) = (k, c, r, r);
+                let (conv_1, _) =
+                    sample_conv_layer(vs, input_dims, kernel_dims, stride, Padding::Valid, rng);
+                network.layers.push(Layer::LL(conv_1));
+                add_activation_layer(&mut network, &relu_layers);
+            },
+
+            26 | 29 | 32 | 35 | 38 => {
+                let k: usize = 256;
+                let c: usize = 1024;
+                let p: usize = 14;
+                let r: usize = 1;
+                let stride: usize = 1;
+                let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
+                let kernel_dims: (usize, usize, usize, usize) = (k, c, r, r);
+                let (conv_1, _) =
+                    sample_conv_layer(vs, input_dims, kernel_dims, stride, Padding::Valid, rng);
+                network.layers.push(Layer::LL(conv_1));
+                add_activation_layer(&mut network, &relu_layers);
+            },
+
+            41 => {
+                let k: usize = 512;
+                let c: usize = 1024;
+                let p: usize = 14;
+                let r: usize = 1;
+                let stride: usize = 2;
+                let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
+                let kernel_dims: (usize, usize, usize, usize) = (k, c, r, r);
+                let (conv_1, _) =
+                    sample_conv_layer(vs, input_dims, kernel_dims, stride, Padding::Valid, rng);
+                network.layers.push(Layer::LL(conv_1));
+                add_activation_layer(&mut network, &relu_layers);
+            },
+
+            42 | 45 | 48 => {
+                let k: usize = 512;
+                let c: usize = 512;
+                let p: usize = 7;
+                let r: usize = 3;
+                let stride: usize = 1;
+                let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
+                let kernel_dims: (usize, usize, usize, usize) = (k, c, r, r);
+                let (conv_1, _) =
+                    sample_conv_layer(vs, input_dims, kernel_dims, stride, Padding::Valid, rng);
+                network.layers.push(Layer::LL(conv_1));
+                add_activation_layer(&mut network, &relu_layers);
+            },
+
+            43 | 46 | 49 => {
+                let k: usize = 2048;
+                let c: usize = 512;
+                let p: usize = 7;
+                let r: usize = 1;
+                let stride: usize = 1;
+                let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
+                let kernel_dims: (usize, usize, usize, usize) = (k, c, r, r);
+                let (conv_1, _) =
+                    sample_conv_layer(vs, input_dims, kernel_dims, stride, Padding::Valid, rng);
+                network.layers.push(Layer::LL(conv_1));
+                add_activation_layer(&mut network, &relu_layers);
+            },
+
+            44 | 47 => {
+                let k: usize = 512;
+                let c: usize = 2048;
+                let p: usize = 7;
+                let r: usize = 1;
+                let stride: usize = 1;
+                let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
+                let kernel_dims: (usize, usize, usize, usize) = (k, c, r, r);
+                let (conv_1, _) =
+                    sample_conv_layer(vs, input_dims, kernel_dims, stride, Padding::Valid, rng);
+                network.layers.push(Layer::LL(conv_1));
+                add_activation_layer(&mut network, &relu_layers);
+            },
+
             _ => {
                 panic!("unkown layer {}", conv_id)
             },
