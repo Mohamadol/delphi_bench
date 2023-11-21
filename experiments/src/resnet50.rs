@@ -16,7 +16,7 @@ pub fn construct_resnet50_model<R: RngCore + CryptoRng>(
 
     // ---------------- these are the ReLU layers id ----------------
     let mut relu_layers = Vec::new();
-    for l in 0..47 {
+    for l in 0..48 {
         relu_layers.push(2 * l + 1);
     }
 
@@ -33,7 +33,7 @@ pub fn construct_resnet50_model<R: RngCore + CryptoRng>(
     };
 
     // ---------------- Conv Layers ----------------
-    for conv_id in 1..48 {
+    for conv_id in 2..50 {
         match conv_id {
             1 => {
                 let k: usize = 64;
@@ -191,7 +191,7 @@ pub fn construct_resnet50_model<R: RngCore + CryptoRng>(
                 let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
                 let kernel_dims: (usize, usize, usize, usize) = (k, c, r, r);
                 let (conv_1, _) =
-                    sample_conv_layer(vs, input_dims, kernel_dims, stride, Padding::Valid, rng);
+                    sample_conv_layer(vs, input_dims, kernel_dims, stride, Padding::Same, rng);
                 network.layers.push(Layer::LL(conv_1));
                 add_activation_layer(&mut network, &relu_layers);
             },
@@ -247,7 +247,7 @@ pub fn construct_resnet50_model<R: RngCore + CryptoRng>(
                 let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
                 let kernel_dims: (usize, usize, usize, usize) = (k, c, r, r);
                 let (conv_1, _) =
-                    sample_conv_layer(vs, input_dims, kernel_dims, stride, Padding::Valid, rng);
+                    sample_conv_layer(vs, input_dims, kernel_dims, stride, Padding::Same, rng);
                 network.layers.push(Layer::LL(conv_1));
                 add_activation_layer(&mut network, &relu_layers);
             },

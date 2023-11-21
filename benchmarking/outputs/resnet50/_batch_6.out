@@ -1,31 +1,5 @@
 spawning server thread for port batch ID 6 and port 8007
 Start:   Receiving keys
-End:     Receiving keys.............................................................1.454s
+End:     Receiving keys.............................................................1.495s
 Start:   Server offline phase
 ··Start:   Linear layers offline phase
-····Start:   Server linear offline protocol
-······Start:   Preprocessing
-······End:     Preprocessing........................................................18.861ms
-······Start:   Receiving Input
-······End:     Receiving Input......................................................68.185ms
-······Start:   Processing Layer
-······End:     Processing Layer.....................................................14.729s
-······Start:   Sending result
-······End:     Sending result.......................................................435.152ms
-····End:     Server linear offline protocol.........................................15.251s
-····Start:   Server linear offline protocol
-······Start:   Preprocessing
-······End:     Preprocessing........................................................18.608ms
-······Start:   Receiving Input
-······End:     Receiving Input......................................................728.343ms
-······Start:   Processing Layer
-······End:     Processing Layer.....................................................64.207s
-······Start:   Sending result
-······End:     Sending result.......................................................434.141ms
-····End:     Server linear offline protocol.........................................65.388s
-····Start:   Server linear offline protocol
-······Start:   Preprocessing
-······End:     Preprocessing........................................................70.174ms
-······Start:   Receiving Input
-······End:     Receiving Input......................................................82.712ms
-······Start:   Processing Layer
