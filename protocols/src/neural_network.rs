@@ -606,8 +606,8 @@ where
                                 .into_shape(dims.output_dimensions())
                                 .expect("shape should be correct")
                                 .into();
-                            next_layer_input
-                                .randomize_local_share(&state.linear_randomizer[&(i + 1)]);
+                            // next_layer_input
+                            //     .randomize_local_share(&state.linear_randomizer[&(i + 1)]);
                             timer_end!(start_time);
                         },
                     }
