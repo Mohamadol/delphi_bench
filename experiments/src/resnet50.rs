@@ -16,7 +16,7 @@ pub fn construct_resnet50_model<R: RngCore + CryptoRng>(
 
     // ---------------- these are the ReLU layers id ----------------
     let mut relu_layers = Vec::new();
-    for l in 0..48 {
+    for l in 0..47 {
         relu_layers.push(2 * l + 1);
     }
 
