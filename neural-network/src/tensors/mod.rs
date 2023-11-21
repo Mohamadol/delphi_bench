@@ -114,8 +114,8 @@ impl<I> Input<I> {
             .ok()
             .map(|(b, c, h, w)| (b as usize, c as usize, h as usize, w as usize))?;
 
-        let tensor = tensor.squeeze_dim(0);
         // let tensor = tensor.squeeze_dim(-1);
+        let tensor = tensor.flatten(0, 3);
         let mut output: Vec<f64> = Vec::<f64>::try_from(&tensor).unwrap();
 
         let output = output
