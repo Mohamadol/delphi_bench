@@ -159,17 +159,38 @@ where
         timing.encoding += encoding_time.elapsed().as_micros() as u64;
 
         let send_gc_time = timer_start!(|| "Sending GCs");
-        let randomizer_label_per_relu = if number_of_relus == 0 {
-            8192
-        } else {
-            randomizer_labels.len() / number_of_relus
-        };
-        for msg_contents in gc_s
-            .chunks(8192)
-            .zip(randomizer_labels.chunks(randomizer_label_per_relu * 8192))
-        {
-            let sent_message = ServerGcMsgSend::new(&msg_contents);
-            crate::bytes::serialize(writer, &sent_message)?;
+        const RETRY_INTERVAL: std::time::Duration = std::time::Duration::from_secs(2); // Time between retries
+        const MAX_RETRIES: u32 = 20; // Maximum number of retries
+        let mut retry_count = 0;
+
+        // changed to retry sending the GCs if there is an error
+        while retry_count <= MAX_RETRIES {
+            let mut success = true;
+            let randomizer_label_per_relu = if number_of_relus == 0 {
+                8192
+            } else {
+                randomizer_labels.len() / number_of_relus
+            };
+            for msg_contents in gc_s
+                .chunks(8192)
+                .zip(randomizer_labels.chunks(randomizer_label_per_relu * 8192))
+            {
+                let sent_message = ServerGcMsgSend::new(&msg_contents);
+                if let Err(e) = crate::bytes::serialize(writer, &sent_message) {
+                    success = false;
+                    println!("Error in sending GCs: {:?}", e);
+                    break;
+                }
+            }
+            if success {
+                break; // Break out of the loop if everything was successful
+            } else {
+                retry_count += 1;
+                std::thread::sleep(RETRY_INTERVAL); // Wait before retrying
+            }
+        }
+        if retry_count > MAX_RETRIES {
+            panic!("Failed to send GCs after {} retries", MAX_RETRIES);
         }
         timer_end!(send_gc_time);
 
@@ -224,68 +245,93 @@ where
         let field_size = crypto_primitives::gc::num_bits(p);
 
         let rcv_gc_time = timer_start!(|| "Receiving GCs");
-        let mut gc_s = Vec::with_capacity(number_of_relus);
-        let mut r_wires = Vec::with_capacity(number_of_relus);
 
         let num_chunks = (number_of_relus as f64 / 8192.0).ceil() as usize;
-        for i in 0..num_chunks {
-            let in_msg: ClientGcMsgRcv = crate::bytes::deserialize(reader)?;
-            let (gc_chunks, r_wire_chunks) = in_msg.msg();
-            if i < (num_chunks - 1) {
-                assert_eq!(gc_chunks.len(), 8192);
+
+        const RETRY_INTERVAL: std::time::Duration = std::time::Duration::from_secs(2); // Time between retries
+        const MAX_RETRIES: u32 = 20; // Maximum number of retries
+        let mut retry_count = 0;
+        loop {
+            let mut success = true;
+
+            let mut gc_s = Vec::with_capacity(number_of_relus);
+            let mut r_wires = Vec::with_capacity(number_of_relus);
+
+            for i in 0..num_chunks {
+                let res: Result<ClientGcMsgRcv, Box<bincode::ErrorKind>> =
+                    crate::bytes::deserialize(reader);
+                match res {
+                    Ok(in_msg) => {
+                        let (gc_chunks, r_wire_chunks) = in_msg.msg();
+                        if i < (num_chunks - 1) {
+                            assert_eq!(gc_chunks.len(), 8192);
+                        }
+                        gc_s.extend(gc_chunks);
+                        r_wires.extend(r_wire_chunks);
+                    },
+                    Err(e) => {
+                        success = false;
+                        retry_count += 1;
+                        println!("Error in receiving GCs: {:?}", e);
+                        std::thread::sleep(RETRY_INTERVAL); // Wait before retrying
+                        break;
+                    },
+                }
             }
-            gc_s.extend(gc_chunks);
-            r_wires.extend(r_wire_chunks);
+            timer_end!(rcv_gc_time);
+
+            if success == true {
+                let OT_time = Instant::now();
+                assert_eq!(gc_s.len(), number_of_relus);
+                let bs = shares
+                    .iter()
+                    .flat_map(|s| u128_to_bits(u128_from_share(*s), field_size))
+                    .map(|b| b == 1)
+                    .collect::<Vec<_>>();
+
+                let labels = if number_of_relus != 0 {
+                    let r = reader.get_mut_ref().remove(0);
+                    let w = writer.get_mut_ref().remove(0);
+
+                    let ot_time = timer_start!(|| "OTs");
+                    let mut channel = Channel::new(r, w);
+                    let mut ot = OTReceiver::init(&mut channel, rng).expect("should work");
+                    let labels = ot
+                        .receive(&mut channel, bs.as_slice(), rng)
+                        .expect("should work");
+                    let labels = labels
+                        .into_iter()
+                        .map(|l| Wire::from_block(l, 2))
+                        .collect::<Vec<_>>();
+                    timer_end!(ot_time);
+                    labels
+                } else {
+                    Vec::new()
+                };
+                timing.OT += OT_time.elapsed().as_micros() as u64;
+
+                timing.total_duration += total_time.elapsed().as_micros() as u64;
+                let file_name = csv_file_name(
+                    "resnet50",
+                    "client",
+                    "offline",
+                    "non_linear",
+                    0 as u64,
+                    batch_id.into(),
+                );
+                write_to_csv(&timing, &file_name);
+
+                timer_end!(start_time);
+
+                return Ok(ClientState {
+                    gc_s,
+                    server_randomizer_labels: r_wires,
+                    client_input_labels: labels,
+                });
+            } else if retry_count > MAX_RETRIES {
+                panic!("Failed to receive GCs after {} retries", MAX_RETRIES);
+            }
         }
-        timer_end!(rcv_gc_time);
-
-        let OT_time = Instant::now();
-        assert_eq!(gc_s.len(), number_of_relus);
-        let bs = shares
-            .iter()
-            .flat_map(|s| u128_to_bits(u128_from_share(*s), field_size))
-            .map(|b| b == 1)
-            .collect::<Vec<_>>();
-
-        let labels = if number_of_relus != 0 {
-            let r = reader.get_mut_ref().remove(0);
-            let w = writer.get_mut_ref().remove(0);
-
-            let ot_time = timer_start!(|| "OTs");
-            let mut channel = Channel::new(r, w);
-            let mut ot = OTReceiver::init(&mut channel, rng).expect("should work");
-            let labels = ot
-                .receive(&mut channel, bs.as_slice(), rng)
-                .expect("should work");
-            let labels = labels
-                .into_iter()
-                .map(|l| Wire::from_block(l, 2))
-                .collect::<Vec<_>>();
-            timer_end!(ot_time);
-            labels
-        } else {
-            Vec::new()
-        };
-        timing.OT += OT_time.elapsed().as_micros() as u64;
-
-        timing.total_duration += total_time.elapsed().as_micros() as u64;
-        let file_name = csv_file_name(
-            "resnet50",
-            "client",
-            "offline",
-            "non_linear",
-            0 as u64,
-            batch_id.into(),
-        );
-        write_to_csv(&timing, &file_name);
-
-        timer_end!(start_time);
-
-        Ok(ClientState {
-            gc_s,
-            server_randomizer_labels: r_wires,
-            client_input_labels: labels,
-        })
     }
 
     pub fn online_server_protocol<'a, W: Write + Send>(
@@ -325,7 +371,28 @@ where
         timer_end!(send_time);
         timer_end!(start_time);
 
-        let res = crate::bytes::serialize(writer, &sent_message);
+        const RETRY_INTERVAL: std::time::Duration = std::time::Duration::from_secs(2); // Time between retries
+        const MAX_RETRIES: u32 = 20; // Maximum number of retries
+        let mut retry_count = 0;
+        while retry_count <= MAX_RETRIES {
+            let mut success = true;
+            let res = crate::bytes::serialize(writer, &sent_message);
+            match res {
+                Ok(_) => {},
+                Err(e) => {
+                    success = false;
+                    retry_count += 1;
+                    println!("Error in serializing/sending data: {}", e);
+                    std::thread::sleep(RETRY_INTERVAL); // Wait before retrying
+                },
+            }
+            if success {
+                break;
+            }
+        }
+        if retry_count > MAX_RETRIES {
+            panic!("Failed to send data after {} retries", MAX_RETRIES);
+        }
 
         timing.total_duration += total_time.elapsed().as_micros() as u64;
         let file_name = csv_file_name(
@@ -337,8 +404,7 @@ where
             batch_id as u64,
         );
         write_to_csv(&timing, &file_name);
-
-        res
+        return Ok(());
     }
 
     /// Outputs shares for the next round's input.
@@ -358,59 +424,86 @@ where
         let start_time = timer_start!(|| "ReLU online protocol");
         let rcv_time = timer_start!(|| "Receiving inputs");
 
-        let total_time = Instant::now();
-        let in_msg: ClientLabelMsgRcv = crate::bytes::deserialize(reader)?;
-        let mut garbler_wires = in_msg.msg();
-        timer_end!(rcv_time);
+        const RETRY_INTERVAL: std::time::Duration = std::time::Duration::from_secs(2); // Time between retries
+        const MAX_RETRIES: u32 = 20; // Maximum number of retries
+        let mut retry_count = 0;
+        while retry_count <= MAX_RETRIES {
+            let mut success = true;
 
-        let eval_time = timer_start!(|| "Evaluating GCs");
-        let gc_eval_time = Instant::now();
-        let c = make_relu::<P>();
-        let num_evaluator_inputs = c.num_evaluator_inputs();
-        let num_garbler_inputs = c.num_garbler_inputs();
-        garbler_wires
-            .iter_mut()
-            .zip(server_input_wires.chunks(num_garbler_inputs / 2))
-            .for_each(|(w1, w2)| w1.extend_from_slice(w2));
+            let total_time = Instant::now();
+            let res: Result<ClientLabelMsgRcv, Box<bincode::ErrorKind>> =
+                crate::bytes::deserialize(reader);
+            match res {
+                Ok(in_msg) => {
+                    let mut garbler_wires: Vec<Vec<Wire>> = in_msg.msg();
+                    timer_end!(rcv_time);
 
-        assert_eq!(num_relus, garbler_wires.len());
-        assert_eq!(num_evaluator_inputs * num_relus, client_input_wires.len());
-        // We access the input wires in reverse.
-        let c = make_relu::<P>();
-        let mut results = client_input_wires
-            .par_chunks(num_evaluator_inputs)
-            .zip(garbler_wires)
-            .zip(evaluators)
-            .map(|((eval_inps, garbler_inps), gc)| {
-                let mut c = c.clone();
-                let result = gc
-                    .eval(&mut c, &garbler_inps, eval_inps)
-                    .expect("evaluation failed");
-                let result = fancy_garbling::util::u128_from_bits(result.as_slice());
-                FixedPoint::new(P::Field::from_repr(u64::try_from(result).unwrap().into())).into()
-            })
-            .collect::<Vec<AdditiveShare<P>>>();
-        results
-            .iter_mut()
-            .zip(next_layer_randomizers)
-            .for_each(|(s, r)| *s = FixedPoint::<P>::randomize_local_share(s, r));
+                    let eval_time = timer_start!(|| "Evaluating GCs");
+                    let gc_eval_time = Instant::now();
+                    let c = make_relu::<P>();
+                    let num_evaluator_inputs = c.num_evaluator_inputs();
+                    let num_garbler_inputs = c.num_garbler_inputs();
+                    garbler_wires
+                        .iter_mut()
+                        .zip(server_input_wires.chunks(num_garbler_inputs / 2))
+                        .for_each(|(w1, w2)| w1.extend_from_slice(w2));
 
-        timing.client_gc_eval += gc_eval_time.elapsed().as_micros() as u64;
-        timing.total_duration += total_time.elapsed().as_micros() as u64;
+                    assert_eq!(num_relus, garbler_wires.len());
+                    assert_eq!(num_evaluator_inputs * num_relus, client_input_wires.len());
+                    // We access the input wires in reverse.
+                    let c = make_relu::<P>();
+                    let mut results = client_input_wires
+                        .par_chunks(num_evaluator_inputs)
+                        .zip(garbler_wires)
+                        .zip(evaluators)
+                        .map(|((eval_inps, garbler_inps), gc)| {
+                            let mut c = c.clone();
+                            let result = gc
+                                .eval(&mut c, &garbler_inps, eval_inps)
+                                .expect("evaluation failed");
+                            let result = fancy_garbling::util::u128_from_bits(result.as_slice());
+                            FixedPoint::new(P::Field::from_repr(
+                                u64::try_from(result).unwrap().into(),
+                            ))
+                            .into()
+                        })
+                        .collect::<Vec<AdditiveShare<P>>>();
+                    results
+                        .iter_mut()
+                        .zip(next_layer_randomizers)
+                        .for_each(|(s, r)| *s = FixedPoint::<P>::randomize_local_share(s, r));
 
-        timer_end!(eval_time);
-        timer_end!(start_time);
+                    timing.client_gc_eval += gc_eval_time.elapsed().as_micros() as u64;
+                    timing.total_duration += total_time.elapsed().as_micros() as u64;
 
-        let file_name = csv_file_name(
-            "resnet50",
-            "client",
-            "online",
-            "non_linear",
-            0 as u64,
-            batch_id as u64,
-        );
-        write_to_csv(&timing, &file_name);
+                    timer_end!(eval_time);
+                    timer_end!(start_time);
 
-        Ok(results)
+                    let file_name = csv_file_name(
+                        "resnet50",
+                        "client",
+                        "online",
+                        "non_linear",
+                        0 as u64,
+                        batch_id as u64,
+                    );
+                    write_to_csv(&timing, &file_name);
+
+                    return Ok(results);
+                },
+                Err(e) => {
+                    retry_count += 1;
+                    println!("Error in receiving data: {}", e);
+                    std::thread::sleep(RETRY_INTERVAL); // Wait before retrying
+                },
+            }
+            if retry_count > MAX_RETRIES {
+                panic!("Failed to receive data after {} retries", MAX_RETRIES);
+            }
+        }
+
+        //--------------------------------- if we reached here, that means there was an error ---------------------------------
+        let error_message = "Max retry attempts exceeded, unable to complete operation";
+        return Err(bincode::ErrorKind::Custom(error_message.to_string()).into());
     }
 }
