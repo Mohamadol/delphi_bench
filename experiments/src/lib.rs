@@ -14,7 +14,7 @@ use nn::{
     tensors::*,
     NeuralArchitecture, NeuralNetwork,
 };
-use protocols::{neural_network::NNProtocol, AdditiveShare};
+use protocols::{csv_timing::*, neural_network::NNProtocol, AdditiveShare, CommunicationData};
 use rand::{CryptoRng, Rng, RngCore};
 use std::{
     io::{BufReader, BufWriter},
@@ -83,6 +83,7 @@ pub fn nn_client<R: RngCore + CryptoRng>(
     input: Input<TenBitExpFP>,
     rng: &mut R,
     batch_id: u16,
+    network: &str,
 ) -> Input<TenBitExpFP> {
     let (client_state, offline_read, offline_write) = {
         let (mut reader, mut writer) = client_connect(server_addr);
@@ -116,6 +117,24 @@ pub fn nn_client<R: RngCore + CryptoRng>(
             writer.count(),
         )
     };
+
+    let offline_communication = CommunicationData {
+        reads: offline_read,
+        writes: offline_write,
+    };
+
+    let online_communication = CommunicationData {
+        reads: online_read,
+        writes: online_write,
+    };
+
+    let offline_communication_file =
+        csv_file_name_network("resnet50", "client", "offline", batch_id as u64);
+    let online_communication_file =
+        csv_file_name_network("resnet50", "client", "online", batch_id as u64);
+    write_to_csv(&offline_communication, &offline_communication_file);
+    write_to_csv(&online_communication, &online_communication_file);
+
     add_to_trace!(|| "Offline Communication", || format!(
         "Read {} bytes\nWrote {} bytes",
         offline_read, offline_write
@@ -132,6 +151,7 @@ pub fn nn_server<R: RngCore + CryptoRng>(
     nn: &NeuralNetwork<TenBitAS, TenBitExpFP>,
     rng: &mut R,
     batch_id: u16,
+    network: &str,
 ) {
     let (server_state, offline_read, offline_write) = {
         let (mut reader, mut writer) = server_connect(server_addr);
@@ -158,6 +178,23 @@ pub fn nn_server<R: RngCore + CryptoRng>(
             writer.count(),
         )
     };
+
+    let offline_communication = CommunicationData {
+        reads: offline_read,
+        writes: offline_write,
+    };
+
+    let online_communication = CommunicationData {
+        reads: online_read,
+        writes: online_write,
+    };
+    let offline_communication_file =
+        csv_file_name_network(network, "server", "offline", batch_id as u64);
+    let online_communication_file =
+        csv_file_name_network(network, "server", "online", batch_id as u64);
+    write_to_csv(&offline_communication, &offline_communication_file);
+    write_to_csv(&online_communication, &online_communication_file);
+
     add_to_trace!(|| "Offline Communication", || format!(
         "Read {} bytes\nWrote {} bytes",
         offline_read, offline_write

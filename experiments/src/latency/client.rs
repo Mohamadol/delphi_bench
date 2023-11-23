@@ -32,6 +32,7 @@ pub fn nn_client<R: RngCore + CryptoRng>(
     architecture: NeuralArchitecture<TenBitAS, TenBitExpFP>,
     rng: &mut R,
     batch_id: u16,
+    network_name: &str,
 ) {
     // Sample a random input.
     let input_dims = architecture.layers.first().unwrap().input_dimensions();
@@ -40,7 +41,14 @@ pub fn nn_client<R: RngCore + CryptoRng>(
         .iter_mut()
         .for_each(|in_i| *in_i = generate_random_number(rng).1);
 
-    crate::nn_client(server_addr, &architecture, input, rng, batch_id);
+    crate::nn_client(
+        server_addr,
+        &architecture,
+        input,
+        rng,
+        batch_id,
+        network_name,
+    );
 }
 
 fn cg_helper<R: RngCore + CryptoRng>(

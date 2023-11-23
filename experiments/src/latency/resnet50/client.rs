@@ -34,6 +34,12 @@ fn main() {
         8001 + batch_id,
     );
     let architecture = (&network).into();
-
-    experiments::latency::client::nn_client(&server_addr, architecture, &mut rng, batch_id);
+    let network_name = "resnet50";
+    experiments::latency::client::nn_client(
+        &server_addr,
+        architecture,
+        &mut rng,
+        batch_id,
+        network_name,
+    );
 }

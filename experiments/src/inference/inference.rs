@@ -37,7 +37,8 @@ pub fn run(
     let server_addr = "127.0.0.1:8001";
     let mut client_output = Output::zeros((1, 10, 0, 0));
     crossbeam::thread::scope(|s| {
-        let server_output = s.spawn(|_| nn_server(&server_addr, &network, &mut server_rng, 1));
+        let server_output =
+            s.spawn(|_| nn_server(&server_addr, &network, &mut server_rng, 1, "cnn_name"));
         client_output = s
             .spawn(|_| {
                 nn_client(
@@ -46,6 +47,7 @@ pub fn run(
                     (image.clone()).into(),
                     &mut client_rng,
                     1,
+                    "cnn_name",
                 )
             })
             .join()

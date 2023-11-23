@@ -75,6 +75,12 @@ pub struct ClientOnlineNonLinear {
     total_duration: u64,
 }
 
+#[derive(Serialize)]
+pub struct CommunicationData {
+    pub reads: u64,
+    pub writes: u64,
+}
+
 pub fn client_keygen<W: Write + Send>(
     writer: &mut IMuxSync<W>,
 ) -> Result<ClientFHE, bincode::Error> {
