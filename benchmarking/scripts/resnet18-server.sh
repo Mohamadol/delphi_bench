@@ -1,6 +1,6 @@
 #!/bin/bash
 
-network="resnet50"
+network="resnet18"
 PROGRAM="/mnt/mohammad/delphi_bench/target/release/${network}-server"
 OUTDIR="/mnt/mohammad/delphi_bench/benchmarking/outputs/${network}/server"
 DATADIR="/mnt/mohammad/delphi_bench/benchmarking/data/${network}/server"
