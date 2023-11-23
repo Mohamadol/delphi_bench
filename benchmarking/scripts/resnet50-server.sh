@@ -1,18 +1,23 @@
 #!/bin/bash
 
 network="resnet50"
-PROGRAM="/mnt/mohammad/delphi/rust/target/release/${network}-server"
-OUTDIR="/mnt/mohammad/delphi/rust/benchmarking/outputs/${network}/server"
+PROGRAM="/mnt/mohammad/delphi_bench/target/release/${network}-server"
+OUTDIR="/mnt/mohammad/delphi_bench/benchmarking/outputs/${network}/server"
 mkdir -p $OUTDIR
 
+./memory_monitor.sh "${OUTDIR}/memory_usage.csv" &
+pid=$!
+
 # Start each instance in the background
-for i in {1..8}
+# for i in {1..8}
+for i in {1..2}
 do
    echo "Starting instance $i in the background"
-    $PROGRAM $i > "${OUTDIR}/_batch_${i}.out" 2>&1 &
+    $PROGRAM $i > "${OUTDIR}/_batch_${i}.out" 2>&1
 done
 
-# Wait for all background jobs to finish
+kill $pid
+
 wait
 
 echo

@@ -25,7 +25,7 @@ pub fn csv_file_name_network(network: &str, system: &str, phase: &str, batch_id:
     csv_file.push_str("/");
     csv_file.push_str(phase);
     csv_file.push_str("/");
-    csv_file.push_str("_batch__");
+    csv_file.push_str("/communication/_batch__");
     csv_file.push_str(&batch_id.to_string());
 
     create_directory_if_not_exists(&csv_file).expect("Error creating directory");
