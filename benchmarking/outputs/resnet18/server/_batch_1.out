@@ -1,0 +1,7 @@
+spawning server thread for port batch ID 1 and port 8002
+layer 11 is incorrect: expected (1, 128, 15, 15), got (1, 128, 16, 16)
+layer 19 is incorrect: expected (1, 256, 8, 8), got (1, 256, 9, 9)
+layer 27 is incorrect: expected (1, 512, 5, 5), got (1, 512, 6, 6)
+thread 'main' panicked at /mnt/mohammad/delphi_bench/experiments/src/resnet18.rs:158:5:
+assertion failed: network.validate()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

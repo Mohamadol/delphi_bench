@@ -40,7 +40,7 @@ pub fn construct_resnet18_model<R: RngCore + CryptoRng>(
             1 => {
                 let k: usize = 64;
                 let c: usize = 3;
-                let p: usize = 30;
+                let p: usize = 28;
                 let r: usize = 3;
                 let stride: usize = 1;
                 let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
@@ -54,7 +54,7 @@ pub fn construct_resnet18_model<R: RngCore + CryptoRng>(
             2 | 3 | 4 | 5 => {
                 let k: usize = 64;
                 let c: usize = 64;
-                let p: usize = 30;
+                let p: usize = 28;
                 let r: usize = 3;
                 let stride: usize = 1;
                 let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
@@ -68,7 +68,7 @@ pub fn construct_resnet18_model<R: RngCore + CryptoRng>(
             6 => {
                 let k: usize = 128;
                 let c: usize = 64;
-                let p: usize = 30;
+                let p: usize = 28;
                 let r: usize = 3;
                 let stride: usize = 2;
                 let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
@@ -82,7 +82,7 @@ pub fn construct_resnet18_model<R: RngCore + CryptoRng>(
             7 | 8 | 9 => {
                 let k: usize = 128;
                 let c: usize = 128;
-                let p: usize = 16;
+                let p: usize = 14;
                 let r: usize = 3;
                 let stride: usize = 1;
                 let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
@@ -96,7 +96,7 @@ pub fn construct_resnet18_model<R: RngCore + CryptoRng>(
             10 => {
                 let k: usize = 256;
                 let c: usize = 128;
-                let p: usize = 16;
+                let p: usize = 14;
                 let r: usize = 3;
                 let stride: usize = 2;
                 let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
@@ -110,7 +110,7 @@ pub fn construct_resnet18_model<R: RngCore + CryptoRng>(
             11 | 12 | 13 => {
                 let k: usize = 256;
                 let c: usize = 256;
-                let p: usize = 9;
+                let p: usize = 7;
                 let r: usize = 3;
                 let stride: usize = 1;
                 let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
@@ -124,7 +124,7 @@ pub fn construct_resnet18_model<R: RngCore + CryptoRng>(
             14 => {
                 let k: usize = 512;
                 let c: usize = 256;
-                let p: usize = 9;
+                let p: usize = 7;
                 let r: usize = 3;
                 let stride: usize = 2;
                 let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
@@ -138,7 +138,7 @@ pub fn construct_resnet18_model<R: RngCore + CryptoRng>(
             15 | 16 | 17 => {
                 let k: usize = 512;
                 let c: usize = 512;
-                let p: usize = 6;
+                let p: usize = 4;
                 let r: usize = 3;
                 let stride: usize = 1;
                 let input_dims: (usize, usize, usize, usize) = (1, c, p, p);
