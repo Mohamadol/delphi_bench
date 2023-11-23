@@ -52,9 +52,24 @@ pub fn client_connect(
     let mut readers = Vec::with_capacity(16);
     let mut writers = Vec::with_capacity(16);
     for _ in 0..16 {
-        let stream = TcpStream::connect(addr).unwrap();
-        readers.push(CountingIO::new(BufReader::new(stream.try_clone().unwrap())));
-        writers.push(CountingIO::new(BufWriter::new(stream)));
+        // let stream = TcpStream::connect(addr).unwrap();
+        // readers.push(CountingIO::new(BufReader::new(stream.try_clone().unwrap())));
+        // writers.push(CountingIO::new(BufWriter::new(stream)));
+        let mut connected = false;
+        while !connected {
+            match TcpStream::connect(addr) {
+                Ok(stream) => {
+                    // println!("Successfully connected to the server for the next ReLU chunk");
+                    connected = true;
+                    readers.push(CountingIO::new(BufReader::new(stream.try_clone().unwrap())));
+                    writers.push(CountingIO::new(BufWriter::new(stream)));
+                },
+                Err(e) => {
+                    // println!("Failed to connect: {}. Retrying in 1 second...", e);
+                    thread::sleep(Duration::from_secs(1));
+                },
+            }
+        }
     }
     (IMuxSync::new(readers), IMuxSync::new(writers))
 }
@@ -65,13 +80,40 @@ pub fn server_connect(
     IMuxSync<CountingIO<BufReader<TcpStream>>>,
     IMuxSync<CountingIO<BufWriter<TcpStream>>>,
 ) {
-    let listener = TcpListener::bind(addr).unwrap();
+    // let listener = TcpListener::bind(addr).unwrap();
+    let listener = loop {
+        match TcpListener::bind(addr) {
+            Ok(listener) => {
+                break listener;
+            },
+            Err(e) => {
+                thread::sleep(Duration::from_secs(1));
+            },
+        }
+    };
+
     let mut incoming = listener.incoming();
     let mut readers = Vec::with_capacity(16);
     let mut writers = Vec::with_capacity(16);
     for _ in 0..16 {
-        let stream = incoming.next().unwrap().unwrap();
-        readers.push(CountingIO::new(BufReader::new(stream.try_clone().unwrap())));
+        // let stream = incoming.next().unwrap().unwrap();
+        // readers.push(CountingIO::new(BufReader::new(stream.try_clone().unwrap())));
+        // writers.push(CountingIO::new(BufWriter::new(stream)));
+        let stream = match incoming.next().unwrap() {
+            Ok(stream) => stream,
+            Err(e) => {
+                // Handle the error, perhaps break or continue depending on the desired behavior
+                panic!("Failed to accept connection: {}", e);
+            },
+        };
+        readers.push(CountingIO::new(BufReader::new(match stream.try_clone() {
+            Ok(cloned_stream) => cloned_stream,
+            Err(e) => {
+                // Handle the cloning error
+                panic!("Failed to clone the stream: {}", e);
+            },
+        })));
+
         writers.push(CountingIO::new(BufWriter::new(stream)));
     }
     (IMuxSync::new(readers), IMuxSync::new(writers))

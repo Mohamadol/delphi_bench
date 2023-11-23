@@ -12,7 +12,7 @@ pid=$!
 # for i in {1..8}
 for i in {1..2}
 do
-   echo "Starting instance $i in the background"
+   echo "Starting server for batch $i"
     $PROGRAM $i > "${OUTDIR}/_batch_${i}.out" 2>&1
 done
 

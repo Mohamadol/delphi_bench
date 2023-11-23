@@ -1,6 +1,6 @@
 #!/bin/bash
 
-f [ "$#" -eq 1 ]; then
+if [ "$#" -eq 1 ]; then
   output_file=$1
 else
   # Default file name if no argument is provided
