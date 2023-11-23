@@ -28,6 +28,7 @@ pub mod latency;
 pub mod linear_only;
 pub mod minionn;
 pub mod mnist;
+pub mod resnet18;
 pub mod resnet32;
 pub mod resnet50;
 pub mod throughput;
