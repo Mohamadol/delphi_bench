@@ -6,7 +6,7 @@ OUTDIR="/mnt/mohammad/delphi_bench/benchmarking/outputs/${network}/server"
 mkdir -p $OUTDIR
 
 ./memory_monitor.sh "${OUTDIR}/memory_usage.csv" &
-pid=$!
+pid="$!"
 
 # Start each instance in the background
 # for i in {1..8}
