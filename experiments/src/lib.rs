@@ -174,9 +174,9 @@ pub fn nn_client<R: RngCore + CryptoRng>(
     };
 
     let offline_communication_file =
-        csv_file_name_network("resnet50", "client", "offline", batch_id as u64);
+        csv_file_name_network("resnet18", "client", "offline", batch_id as u64);
     let online_communication_file =
-        csv_file_name_network("resnet50", "client", "online", batch_id as u64);
+        csv_file_name_network("resnet18", "client", "online", batch_id as u64);
     write_to_csv(&offline_communication, &offline_communication_file);
     write_to_csv(&online_communication, &online_communication_file);
 

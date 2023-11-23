@@ -107,3 +107,12 @@ path = "src/latency/resnet50/server.rs"
 [[bin]]
 name = "resnet50-client"
 path = "src/latency/resnet50/client.rs"
+
+
+[[bin]]
+name = "resnet18-server"
+path = "src/latency/resnet18/server.rs"
+
+[[bin]]
+name = "resnet18-client"
+path = "src/latency/resnet18/client.rs"

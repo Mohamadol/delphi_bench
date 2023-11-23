@@ -115,7 +115,7 @@ where
         timer_end!(start_time);
 
         let file_name = csv_file_name(
-            "resnet50",
+            "resnet18",
             "server",
             "offline",
             "linear",
@@ -203,7 +203,7 @@ where
         timer_end!(start_time);
 
         let file_name = csv_file_name(
-            "resnet50",
+            "resnet18",
             "client",
             "offline",
             "linear",
@@ -274,7 +274,7 @@ where
         timer_end!(start);
 
         let file_name = csv_file_name(
-            "resnet50",
+            "resnet18",
             "server",
             "online",
             "linear",

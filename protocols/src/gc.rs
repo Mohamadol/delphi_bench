@@ -186,7 +186,7 @@ where
 
         timing.total_duration += total_time.elapsed().as_micros() as u64;
         let file_name = csv_file_name(
-            "resnet50",
+            "resnet18",
             "server",
             "offline",
             "non_linear",
@@ -270,7 +270,7 @@ where
 
         timing.total_duration += total_time.elapsed().as_micros() as u64;
         let file_name = csv_file_name(
-            "resnet50",
+            "resnet18",
             "client",
             "offline",
             "non_linear",
@@ -329,7 +329,7 @@ where
 
         timing.total_duration += total_time.elapsed().as_micros() as u64;
         let file_name = csv_file_name(
-            "resnet50",
+            "resnet18",
             "server",
             "online",
             "non_linear",
@@ -402,7 +402,7 @@ where
         timer_end!(start_time);
 
         let file_name = csv_file_name(
-            "resnet50",
+            "resnet18",
             "client",
             "online",
             "non_linear",

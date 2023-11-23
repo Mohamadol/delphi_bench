@@ -1,13 +1,12 @@
 #!/bin/bash
 
 network="resnet18"
-PROGRAM="/mnt/mohammad/delphi_bench/target/release/${network}-server"
-OUTDIR="/mnt/mohammad/delphi_bench/benchmarking/outputs/${network}/server"
-DATADIR="/mnt/mohammad/delphi_bench/benchmarking/data/${network}/server"
+PROGRAM="/mnt/mohammad/delphi_bench/target/release/${network}-client"
+OUTDIR="/mnt/mohammad/delphi_bench/benchmarking/outputs/${network}/client"
+DATADIR="/mnt/mohammad/delphi_bench/benchmarking/data/${network}/client"
 
 mkdir -p $OUTDIR
 mkdir -p $DATADIR
-
 
 ./memory_monitor.sh "${DATADIR}/memory_usage.csv" &
 pid="$!"
@@ -16,7 +15,7 @@ pid="$!"
 # for i in {1..8}
 for i in {1..1}
 do
-   echo "Starting server for batch $i"
+    echo "Starting client for batch $i"
     $PROGRAM $i > "${OUTDIR}/_batch_${i}.out" 2>&1
 done
 
