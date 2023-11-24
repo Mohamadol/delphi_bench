@@ -1,0 +1,61 @@
+spawning server thread for port batch ID 1 and port 8002
+Start:   Receiving keys
+End:     Receiving keys.............................................................1.402s
+Start:   Server offline phase
+··Start:   Linear layers offline phase
+····Start:   Server linear offline protocol
+······Start:   Preprocessing
+······End:     Preprocessing........................................................4.156ms
+······Start:   Receiving Input
+······End:     Receiving Input......................................................16.138ms
+······Start:   Processing Layer
+······End:     Processing Layer.....................................................2.103s
+······Start:   Sending result
+······End:     Sending result.......................................................199.151ms
+····End:     Server linear offline protocol.........................................2.323s
+····Start:   Server linear offline protocol
+······Start:   Preprocessing
+······End:     Preprocessing........................................................4.42ms
+······Start:   Receiving Input
+······End:     Receiving Input......................................................669.308ms
+······Start:   Processing Layer
+······End:     Processing Layer.....................................................16.901s
+······Start:   Sending result
+······End:     Sending result.......................................................8.707ms
+····End:     Server linear offline protocol.........................................17.583s
+····Start:   Server linear offline protocol
+······Start:   Preprocessing
+······End:     Preprocessing........................................................3.913ms
+······Start:   Receiving Input
+······End:     Receiving Input......................................................926.151ms
+······Start:   Processing Layer
+······End:     Processing Layer.....................................................16.515s
+······Start:   Sending result
+······End:     Sending result.......................................................8.807ms
+····End:     Server linear offline protocol.........................................17.454s
+····Start:   Server linear offline protocol
+······Start:   Preprocessing
+······End:     Preprocessing........................................................3.931ms
+······Start:   Receiving Input
+······End:     Receiving Input......................................................905.390ms
+······Start:   Processing Layer
+······End:     Processing Layer.....................................................16.549s
+······Start:   Sending result
+······End:     Sending result.......................................................8.330ms
+····End:     Server linear offline protocol.........................................17.466s
+····Start:   Server linear offline protocol
+······Start:   Preprocessing
+······End:     Preprocessing........................................................4.466ms
+······Start:   Receiving Input
+······End:     Receiving Input......................................................932.602ms
+······Start:   Processing Layer
+······End:     Processing Layer.....................................................16.588s
+······Start:   Sending result
+······End:     Sending result.......................................................8.670ms
+····End:     Server linear offline protocol.........................................17.534s
+····Start:   Server linear offline protocol
+······Start:   Preprocessing
+······End:     Preprocessing........................................................6.421ms
+······Start:   Receiving Input
+······End:     Receiving Input......................................................124.846ms
+······Start:   Processing Layer
