@@ -29,18 +29,25 @@ pub struct KeygenType;
 pub type ServerKeyRcv = InMessage<Vec<std::os::raw::c_char>, KeygenType>;
 pub type ClientKeySend<'a> = OutMessage<'a, Vec<std::os::raw::c_char>, KeygenType>;
 
+//--------------------------------- added for benchmarking ---------------------------------
 pub mod csv_timing;
 #[derive(Serialize)]
 pub struct ServerOfflineLinear {
-    server_gen_masks: u64,
-    server_processing: u64,
+    random_gen: u64,
+    weight_encoding: u64,
+    HE_processing: u64,
+    input_CT_communication: u64,
+    output_CT_communication: u64,
     total_duration: u64,
 }
+
 #[derive(Serialize)]
 pub struct ClientOfflineLinear {
-    client_gen_masks: u64,
-    client_encryption: u64,
-    client_decryption: u64,
+    random_gen: u64,
+    encryption: u64,
+    decryption: u64,
+    input_CT_communication: u64,
+    output_CT_communication: u64,
     total_duration: u64,
 }
 
@@ -48,30 +55,42 @@ pub struct ClientOfflineLinear {
 pub struct ServerOfflineNonLinear {
     garbling: u64,
     encoding: u64,
+    OT_communication: u64,
+    GC_communication: u64,
     total_duration: u64,
 }
 
 #[derive(Serialize)]
 pub struct ClientOfflineNonLinear {
-    OT: u64,
+    OT_communication: u64,
+    GC_communication: u64,
     total_duration: u64,
 }
 
 #[derive(Serialize)]
 pub struct ServerOnlineLinear {
-    server_processing_plain: u64,
+    plain_processing: u64,
+    communication: u64,
+    total_duration: u64,
+}
+
+#[derive(Serialize)]
+pub struct ClientOnlineLinear {
+    communication: u64,
     total_duration: u64,
 }
 
 #[derive(Serialize)]
 pub struct ServerOnlineNonLinear {
-    server_encoding: u64,
+    encoding: u64,
+    communication: u64,
     total_duration: u64,
 }
 
 #[derive(Serialize)]
 pub struct ClientOnlineNonLinear {
-    client_gc_eval: u64,
+    GC_eval: u64,
+    communication: u64,
     total_duration: u64,
 }
 
@@ -80,6 +99,7 @@ pub struct CommunicationData {
     pub reads: u64,
     pub writes: u64,
 }
+//-------------------------------------------------------------------------------------
 
 pub fn client_keygen<W: Write + Send>(
     writer: &mut IMuxSync<W>,

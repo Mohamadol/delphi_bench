@@ -433,6 +433,7 @@ where
                         &next_layer_input.as_slice().unwrap(),
                         layer_encoders,
                         batch_id,
+                        conv_id,
                     )?;
                     let relu_output_randomizers = state.relu_output_randomizers
                         [num_consumed_relus..(num_consumed_relus + layer_size)]
@@ -536,6 +537,7 @@ where
         let start_time = timer_start!(|| "Client online phase");
         let (mut next_layer_input, _) = input.share_with_randomness(&state.linear_randomizer[&0]);
 
+        let mut conv_id = 0;
         for (i, layer) in architecture.layers.iter().enumerate() {
             match layer {
                 LayerInfo::NLL(dims, nll_info) => {
@@ -576,6 +578,7 @@ where
                                 &layer_circuits,         // circuits for layer.
                                 &next_layer_randomizers, // circuits for layer.
                                 batch_id,
+                                conv_id,
                             )?;
                             next_layer_input = ndarray::Array1::from_iter(output)
                                 .into_shape(dims.output_dimensions())
@@ -617,12 +620,14 @@ where
                     // Send server secret share if required by the layer
                     let input = next_layer_input;
                     next_layer_input = state.linear_post_application_share[&i].clone();
-
+                    conv_id += 1;
                     LinearProtocol::online_client_protocol(
                         writer,
                         &input,
                         &layer_info,
                         &mut next_layer_input,
+                        conv_id,
+                        batch_id,
                     )?;
                     // If this is not the last layer, and if the next layer
                     // is also linear, randomize the output correctly.
