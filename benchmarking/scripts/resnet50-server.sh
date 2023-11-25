@@ -13,7 +13,7 @@ mkdir -p $DATADIR
 pid="$!"
 
 # Start each instance in the background
-for i in {1..8}
+for i in {1..1}
 # for i in {1..2}
 do
    echo "Starting server for batch $i"
