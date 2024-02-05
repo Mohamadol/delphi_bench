@@ -58,12 +58,14 @@ where
         rng: &mut RNG,
         layer_id: u16,
         batch_id: u16,
+        network_name: &str,
+        weight_encoding_time: u64,
     ) -> Result<Output<P::Field>, bincode::Error> {
         // TODO: Add batch size
 
         let mut timing = ServerOfflineLinear {
             random_gen: 0,
-            weight_encoding: 0,
+            weight_encoding: weight_encoding_time,
             input_CT_communication: 0,
             HE_processing: 0,
             output_CT_communication: 0,
@@ -90,12 +92,10 @@ where
             .iter_mut()
             .zip(&server_randomness)
             .for_each(|(e1, e2)| *e1 = e2.into_repr().0);
+
+        server_cg.preprocess(&server_randomness_c);
         timing.random_gen += server_random_gen.elapsed().as_micros() as u64;
 
-        //--------------------------------- weight encoding ---------------------------------
-        let weight_encoding_time = Instant::now();
-        server_cg.preprocess(&server_randomness_c);
-        timing.weight_encoding += weight_encoding_time.elapsed().as_micros() as u64;
 
         timer_end!(preprocess_time);
 
@@ -134,7 +134,7 @@ where
         timer_end!(start_time);
 
         let file_name = csv_file_name(
-            "resnet50_coalescing",
+            network_name,
             "server",
             "offline",
             "linear",
@@ -163,6 +163,7 @@ where
         rng: &mut RNG,
         layer_id: u16,
         batch_id: u16,
+        network_name: &str,
     ) -> Result<(Input<P::Field>, Output<AdditiveShare<P>>), bincode::Error> {
         let mut timing = ClientOfflineLinear {
             random_gen: 0,
@@ -238,7 +239,7 @@ where
         timer_end!(start_time);
 
         let file_name = csv_file_name(
-            "resnet50_coalescing",
+            network_name,
             "client",
             "offline",
             "linear",
@@ -257,6 +258,7 @@ where
         next_layer_input: &mut Output<AdditiveShare<P>>,
         layer_id: u16,
         batch_id: u16,
+        network_name: &str,
     ) -> Result<(), bincode::Error> {
         let mut timing = ClientOnlineLinear {
             communication: 0,
@@ -285,7 +287,7 @@ where
         timer_end!(start);
 
         let file_name = csv_file_name(
-            "resnet50_coalescing",
+            network_name,
             "client",
             "online",
             "linear",
@@ -305,6 +307,7 @@ where
         output: &mut Output<AdditiveShare<P>>,
         layer_id: u16,
         batch_id: u16,
+        network_name: &str,
     ) -> Result<(), bincode::Error> {
         let mut timing = ServerOnlineLinear {
             plain_processing: 0,
@@ -339,7 +342,7 @@ where
         timer_end!(start);
 
         let file_name = csv_file_name(
-            "resnet50_coalescing",
+            network_name,
             "server",
             "online",
             "linear",

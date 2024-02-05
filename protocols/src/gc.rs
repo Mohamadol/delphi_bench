@@ -93,6 +93,7 @@ where
         number_of_relus: usize,
         rng: &mut RNG,
         batch_id: u16,
+        network_name: &str,
     ) -> Result<ServerState<P>, bincode::Error> {
         let mut timing = ServerOfflineNonLinear {
             garbling: 0,
@@ -204,7 +205,7 @@ where
         timer_end!(start_time);
 
         let file_name = csv_file_name(
-            "resnet50_coalescing",
+            network_name,
             "server",
             "offline",
             "non_linear",
@@ -226,6 +227,7 @@ where
         shares: &[AdditiveShare<P>],
         rng: &mut RNG,
         batch_id: u16,
+        network_name: &str,
     ) -> Result<ClientState, bincode::Error> {
         let mut timing = ClientOfflineNonLinear {
             OT_communication: 0,
@@ -296,7 +298,7 @@ where
         timer_end!(start_time);
 
         let file_name = csv_file_name(
-            "resnet50_coalescing",
+            network_name,
             "client",
             "offline",
             "non_linear",
@@ -318,6 +320,7 @@ where
         encoders: &[Encoder],
         batch_id: u16,
         conv_id: u16,
+        network_name: &str,
     ) -> Result<(), bincode::Error> {
         let mut timing = ServerOnlineNonLinear {
             encoding: 0,
@@ -362,7 +365,7 @@ where
         timer_end!(start_time);
 
         let file_name = csv_file_name(
-            "resnet50_coalescing",
+            network_name,
             "server",
             "online",
             "non_linear",
@@ -384,6 +387,7 @@ where
         next_layer_randomizers: &[P::Field],
         batch_id: u16,
         conv_id: u16,
+        network_name: &str,
     ) -> Result<Vec<AdditiveShare<P>>, bincode::Error> {
         let mut timing = ClientOnlineNonLinear {
             GC_eval: 0,
@@ -445,7 +449,7 @@ where
         timer_end!(start_time);
 
         let file_name = csv_file_name(
-            "resnet50_coalescing",
+            network_name,
             "client",
             "online",
             "non_linear",

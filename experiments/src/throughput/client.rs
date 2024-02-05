@@ -36,6 +36,7 @@ pub fn nn_client<R: RngCore + CryptoRng>(
                 &architecture,
                 rng,
                 1,
+                "some_bnetwork",
             )
             .unwrap()
         };
@@ -74,6 +75,7 @@ pub fn nn_client<R: RngCore + CryptoRng>(
                     architecture,
                     &client_state,
                     1,
+                    "some network",
                 )
                 .unwrap();
                 start.elapsed()

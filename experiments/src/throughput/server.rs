@@ -25,7 +25,7 @@ pub fn nn_server<R: RngCore + CryptoRng>(
             let mut read_stream = IMuxSync::new(vec![BufReader::new(stream.try_clone().unwrap())]);
             let mut write_stream = IMuxSync::new(vec![stream]);
 
-            NNProtocol::offline_server_protocol(&mut read_stream, &mut write_stream, &nn, rng, 1)
+            NNProtocol::offline_server_protocol(&mut read_stream, &mut write_stream, &nn, rng, 1, "")
                 .unwrap()
         };
         server_states.push(server_state);
@@ -45,6 +45,7 @@ pub fn nn_server<R: RngCore + CryptoRng>(
                     &nns[0].1,
                     &server_states[0],
                     1,
+                    "",
                 )
                 .unwrap()
             });

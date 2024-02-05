@@ -31,6 +31,8 @@ use crypto_primitives::{
 use crate::{gc::ReluProtocol, linear_layer::LinearProtocol, quad_approx::QuadApproxProtocol};
 use protocols_sys::*;
 use std::collections::BTreeMap;
+use std::time::Instant;
+
 
 pub struct NNProtocol<P: FixedPointParameters> {
     _share: PhantomData<P>,
@@ -132,6 +134,7 @@ where
         neural_network: &NeuralNetwork<AdditiveShare<P>, FixedPoint<P>>,
         rng: &mut RNG,
         batch_id: u16,
+        network_name: &str,
     ) -> Result<ServerState<P>, bincode::Error> {
         let mut num_relu = 0;
         let mut num_approx = 0;
@@ -154,6 +157,8 @@ where
                 Layer::LL(layer) => {
                     let randomizer = match &layer {
                         LinearLayer::Conv2d { .. } | LinearLayer::FullyConnected { .. } => {
+
+                            let weight_encoding = Instant::now();
                             let mut cg_handler = match &layer {
                                 LinearLayer::Conv2d { .. } => SealServerCG::Conv2D(
                                     server_cg::Conv2D::new(&sfhe, layer, &layer.kernel_to_repr()),
@@ -167,6 +172,7 @@ where
                                 },
                                 _ => unreachable!(),
                             };
+                            let weight_encoding_duration = weight_encoding.elapsed().as_micros() as u64;
 
                             conv_id += 1;
                             LinearProtocol::<P>::offline_server_protocol(
@@ -178,6 +184,8 @@ where
                                 rng,
                                 conv_id,
                                 batch_id,
+                                network_name,
+                                weight_encoding_duration,
                             )?
                         },
                         // AvgPool and Identity don't require an offline phase
@@ -197,7 +205,7 @@ where
         let crate::gc::ServerState {
             encoders: relu_encoders,
             output_randomizers: relu_output_randomizers,
-        } = ReluProtocol::<P>::offline_server_protocol(reader, writer, num_relu, rng, batch_id)?;
+        } = ReluProtocol::<P>::offline_server_protocol(reader, writer, num_relu, rng, batch_id, network_name)?;
         timer_end!(relu_time);
 
         let approx_time = timer_start!(|| format!(
@@ -223,6 +231,7 @@ where
         neural_network_architecture: &NeuralArchitecture<AdditiveShare<P>, FixedPoint<P>>,
         rng: &mut RNG,
         batch_id: u16,
+        network_name: &str,
     ) -> Result<ClientState<P>, bincode::Error> {
         let mut num_relu = 0;
         let mut num_approx = 0;
@@ -281,6 +290,7 @@ where
                                 rng,
                                 conv_id,
                                 batch_id,
+                                network_name,
                             )?
                         },
                         _ => {
@@ -348,6 +358,7 @@ where
             current_layer_shares.as_slice(),
             rng,
             batch_id,
+            network_name,
         )?;
 
         let (relu_client_labels, relu_server_labels) = if num_relu != 0 {
@@ -401,6 +412,7 @@ where
         neural_network: &NeuralNetwork<AdditiveShare<P>, FixedPoint<P>>,
         state: &ServerState<P>,
         batch_id: u16,
+        network_name: &str,
     ) -> Result<(), bincode::Error> {
         let (first_layer_in_dims, first_layer_out_dims) = {
             let layer = neural_network.layers.first().unwrap();
@@ -434,6 +446,7 @@ where
                         layer_encoders,
                         batch_id,
                         conv_id,
+                        network_name,
                     )?;
                     let relu_output_randomizers = state.relu_output_randomizers
                         [num_consumed_relus..(num_consumed_relus + layer_size)]
@@ -493,6 +506,7 @@ where
                         &mut next_layer_input,
                         conv_id,
                         batch_id,
+                        network_name,
                     )?;
                     next_layer_derandomizer = Output::zeros(layer.output_dimensions());
                     // Since linear operations involve multiplications
@@ -519,6 +533,7 @@ where
         architecture: &NeuralArchitecture<AdditiveShare<P>, FixedPoint<P>>,
         state: &ClientState<P>,
         batch_id: u16,
+        network_name: &str,
     ) -> Result<Output<FixedPoint<P>>, bincode::Error> {
         let first_layer_in_dims = {
             let layer = architecture.layers.first().unwrap();
@@ -579,6 +594,7 @@ where
                                 &next_layer_randomizers, // circuits for layer.
                                 batch_id,
                                 conv_id,
+                                network_name,
                             )?;
                             next_layer_input = ndarray::Array1::from_iter(output)
                                 .into_shape(dims.output_dimensions())
@@ -628,6 +644,7 @@ where
                         &mut next_layer_input,
                         conv_id,
                         batch_id,
+                        network_name,
                     )?;
                     // If this is not the last layer, and if the next layer
                     // is also linear, randomize the output correctly.

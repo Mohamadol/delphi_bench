@@ -16,7 +16,7 @@ pub fn construct_resnet50_model<R: RngCore + CryptoRng>(
 
     // ---------------- these are the ReLU layers id ----------------
     let mut relu_layers = Vec::new();
-    for l in 0..46 {
+    for l in 0..47 {
     // for l in 0..1 {
         relu_layers.push(2 * l + 1);
     }
@@ -34,7 +34,7 @@ pub fn construct_resnet50_model<R: RngCore + CryptoRng>(
     };
 
     // ---------------- Conv Layers ----------------
-    for conv_id in 2..50 {
+    for conv_id in 2..51 {
     // for conv_id in 2..4 {
         match conv_id {
             1 => {
@@ -281,6 +281,19 @@ pub fn construct_resnet50_model<R: RngCore + CryptoRng>(
                 network.layers.push(Layer::LL(conv_1));
                 add_activation_layer(&mut network, &relu_layers);
             },
+
+            50 =>{
+                network.layers.push(Layer::LL(sample_avg_pool_layer(
+                    (1, 2048, 7, 7),
+                    (7, 7),
+                    1,
+                )));
+            }
+            51 =>{
+                let fc_input_dims = (1, 2048, 1, 1);
+                let (fc, _) = sample_fc_layer(vs, fc_input_dims, 10, rng);
+                network.layers.push(Layer::LL(fc));
+            }
 
             _ => {
                 panic!("unkown layer {}", conv_id)

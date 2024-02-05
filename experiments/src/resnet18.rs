@@ -17,7 +17,7 @@ pub fn construct_resnet18_model<R: RngCore + CryptoRng>(
     // ---------------- these are the ReLU layers id ----------------
     let mut relu_layers = Vec::new();
     // for l in 0..46 {
-    for l in 0..16 {
+    for l in 0..17 {
         relu_layers.push(2 * l + 1);
     }
 
@@ -35,7 +35,7 @@ pub fn construct_resnet18_model<R: RngCore + CryptoRng>(
 
     // ---------------- Conv Layers ----------------
     // for conv_id in 2..50 {
-    for conv_id in 1..18 {
+    for conv_id in 1..20 {
         match conv_id {
             1 => {
                 let k: usize = 64;
@@ -148,6 +148,19 @@ pub fn construct_resnet18_model<R: RngCore + CryptoRng>(
                 network.layers.push(Layer::LL(conv_1));
                 add_activation_layer(&mut network, &relu_layers);
             },
+
+            18 =>{
+                network.layers.push(Layer::LL(sample_avg_pool_layer(
+                    (1, 512, 4, 4),
+                    (4, 4),
+                    1,
+                )));
+            }
+            19 =>{
+                let fc_input_dims = (1, 512, 1, 1);
+                let (fc, _) = sample_fc_layer(vs, fc_input_dims, 10, rng);
+                network.layers.push(Layer::LL(fc));
+            }
 
             _ => {
                 panic!("unkown layer {}", conv_id)

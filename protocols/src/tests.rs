@@ -407,6 +407,7 @@ mod linear {
                             layer_output_dims,
                             &mut cg_handler,
                             &mut rng,
+                            "",
                         );
                     }
                     unreachable!("we should never exit server's loop")
@@ -437,6 +438,7 @@ mod linear {
                                 layer_output_dims,
                                 &mut cg_handler,
                                 &mut rng,
+                                "",
                             )
                         }
                         LayerInfo::NLL(..) => unreachable!(),
@@ -466,6 +468,7 @@ mod linear {
                         &server_current_layer_share,
                         &info,
                         &mut result,
+                        "",
                     ),
                     LayerInfo::NLL(..) => unreachable!(),
                 }
@@ -484,6 +487,7 @@ mod linear {
                             &server_offline,        // this is our `s` from above.
                             &Input::zeros(layer_input_dims),
                             &mut output, // this is where the result will go.
+                            "",
                         )
                         .map(|_| output);
                     }
@@ -641,6 +645,7 @@ mod linear {
                             layer_output_dims,
                             &mut cg_handler,
                             &mut rng,
+                            "",
                         );
                     }
                     unreachable!("we should never exit server's loop")
@@ -673,6 +678,7 @@ mod linear {
                                 layer_output_dims,
                                 &mut cg_handler,
                                 &mut rng,
+                                "",
                             )
                         }
                         LayerInfo::NLL(..) => unreachable!(),
@@ -728,6 +734,7 @@ mod linear {
                         &server_current_layer_share,
                         &info,
                         &mut result,
+                        "",
                     ),
                     LayerInfo::NLL(..) => unreachable!(),
                 }
@@ -746,6 +753,7 @@ mod linear {
                             &server_offline,        // this is our `s` from above.
                             &Input::zeros(layer_input_dims),
                             &mut output, // this is where the result will go.
+                            "",
                         )
                         .map(|_| output);
                     }

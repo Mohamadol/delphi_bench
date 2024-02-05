@@ -21,6 +21,8 @@ use std::{
     io::{BufReader, BufWriter},
     net::TcpStream,
 };
+use std::time::Instant;
+
 
 const RANDOMNESS: [u8; 32] = [
     0x11, 0xe0, 0x8f, 0xbc, 0x89, 0xa7, 0x34, 0x01, 0x45, 0x86, 0x82, 0xb6, 0x51, 0xda, 0xf4, 0x76,
@@ -43,6 +45,7 @@ fn cg_helper<R: RngCore + CryptoRng>(
             Layer::LL(layer) => {
                 let randomizer = match &layer {
                     LinearLayer::Conv2d { .. } | LinearLayer::FullyConnected { .. } => {
+                        let weight_encoding = Instant::now();
                         let mut cg_handler = match &layer {
                             LinearLayer::Conv2d { .. } => SealServerCG::Conv2D(
                                 server_cg::Conv2D::new(&sfhe, layer, &layer.kernel_to_repr()),
@@ -56,6 +59,8 @@ fn cg_helper<R: RngCore + CryptoRng>(
                             },
                             _ => unreachable!(),
                         };
+                        let weight_encoding_duration = weight_encoding.elapsed().as_micros() as u64;
+
                         LinearProtocol::<TenBitExpParams>::offline_server_protocol(
                             reader,
                             writer,
@@ -65,6 +70,8 @@ fn cg_helper<R: RngCore + CryptoRng>(
                             rng,
                             1,
                             1,
+                            "",
+                            weight_encoding_duration,
                         )
                         .unwrap()
                     },
