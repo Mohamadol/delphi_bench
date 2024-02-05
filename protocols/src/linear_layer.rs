@@ -69,7 +69,7 @@ where
             input_CT_communication: 0,
             HE_processing: 0,
             output_CT_communication: 0,
-            total_duration: 0,
+            total_duration: weight_encoding_time,
         };
 
         let start_time = timer_start!(|| "Server linear offline protocol");
