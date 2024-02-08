@@ -15,15 +15,16 @@ use crypto_primitives::{
     },
     Share,
 };
-use io_utils::imux::IMuxSync;
+use io_utils::{counting::CountingIO, imux::IMuxSync};
 use ocelot::ot::{AlszReceiver as OTReceiver, AlszSender as OTSender, Receiver, Sender};
 use rand::{CryptoRng, RngCore};
 use rayon::prelude::*;
 use scuttlebutt::Channel;
 use std::{
     convert::TryFrom,
-    io::{Read, Write},
+    io::{BufReader, BufWriter, Read, Write},
     marker::PhantomData,
+    net::{TcpListener, TcpStream},
 };
 
 use crate::csv_timing::*;
@@ -87,9 +88,12 @@ where
         make_relu::<P>().num_evaluator_inputs()
     }
 
-    pub fn offline_server_protocol<R: Read + Send, W: Write + Send, RNG: CryptoRng + RngCore>(
-        reader: &mut IMuxSync<R>,
-        writer: &mut IMuxSync<W>,
+    // pub fn offline_server_protocol<R: Read + Send, W: Write + Send, RNG: CryptoRng + RngCore>(
+    pub fn offline_server_protocol<RNG: CryptoRng + RngCore>(
+        // reader: &mut IMuxSync<R>,
+        // writer: &mut IMuxSync<W>,
+        reader: &mut IMuxSync<CountingIO<BufReader<TcpStream>>>,
+        writer: &mut IMuxSync<CountingIO<BufWriter<TcpStream>>>,
         number_of_relus: usize,
         rng: &mut RNG,
         batch_id: u16,
@@ -220,9 +224,12 @@ where
         })
     }
 
-    pub fn offline_client_protocol<R: Read + Send, W: Write + Send, RNG: RngCore + CryptoRng>(
-        reader: &mut IMuxSync<R>,
-        writer: &mut IMuxSync<W>,
+    // pub fn offline_client_protocol<R: Read + Send, W: Write + Send, RNG: RngCore + CryptoRng>(
+    pub fn offline_client_protocol<RNG: RngCore + CryptoRng>(
+        // reader: &mut IMuxSync<R>,
+        // writer: &mut IMuxSync<W>,
+        reader: &mut IMuxSync<CountingIO<BufReader<TcpStream>>>,
+        writer: &mut IMuxSync<CountingIO<BufWriter<TcpStream>>>,
         number_of_relus: usize,
         shares: &[AdditiveShare<P>],
         rng: &mut RNG,
@@ -314,8 +321,10 @@ where
         })
     }
 
-    pub fn online_server_protocol<'a, W: Write + Send>(
-        writer: &mut IMuxSync<W>,
+    // pub fn online_server_protocol<'a, W: Write + Send>(
+    pub fn online_server_protocol(
+        // writer: &mut IMuxSync<W>,
+        writer: &mut IMuxSync<CountingIO<BufWriter<TcpStream>>>,
         shares: &[AdditiveShare<P>],
         encoders: &[Encoder],
         batch_id: u16,
@@ -378,8 +387,10 @@ where
     }
 
     /// Outputs shares for the next round's input.
-    pub fn online_client_protocol<R: Read + Send>(
-        reader: &mut IMuxSync<R>,
+    // pub fn online_client_protocol<R: Read + Send>(
+    pub fn online_client_protocol(
+        // reader: &mut IMuxSync<R>,
+        reader: &mut IMuxSync<CountingIO<BufReader<TcpStream>>>,
         num_relus: usize,
         server_input_wires: &[Wire],
         client_input_wires: &[Wire],

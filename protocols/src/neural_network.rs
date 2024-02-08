@@ -6,8 +6,9 @@ use neural_network::{
 };
 use rand::{CryptoRng, RngCore};
 use std::{
-    io::{Read, Write},
+    io::{BufReader, BufWriter, Read, Write},
     marker::PhantomData,
+    net::{TcpListener, TcpStream},
 };
 
 use algebra::{
@@ -16,7 +17,7 @@ use algebra::{
     FpParameters, PrimeField,
 };
 
-use io_utils::imux::IMuxSync;
+use io_utils::{counting::CountingIO, imux::IMuxSync};
 
 use neural_network::{
     layers::*,
@@ -32,7 +33,6 @@ use crate::{gc::ReluProtocol, linear_layer::LinearProtocol, quad_approx::QuadApp
 use protocols_sys::*;
 use std::collections::BTreeMap;
 use std::time::Instant;
-
 
 pub struct NNProtocol<P: FixedPointParameters> {
     _share: PhantomData<P>,
@@ -123,14 +123,20 @@ pub type MsgRcv<P> = crate::InMessage<Output<AdditiveShare<P>>, NNProtocolType>;
 ///
 ///                       ------ y_i + a + r_i -->
 /// ```
+
+//---------------------- changed this function to pass IMuxSync<CountingIO<BufReader<TcpStream>>>
+//                       instead of generics, which helps reading bytes transferred inside of the function ----------------------
 impl<P: FixedPointParameters> NNProtocol<P>
 where
     <P::Field as PrimeField>::Params: Fp64Parameters,
     P::Field: PrimeField<BigInt = <<P::Field as PrimeField>::Params as FpParameters>::BigInt>,
 {
-    pub fn offline_server_protocol<R: Read + Send, W: Write + Send, RNG: CryptoRng + RngCore>(
-        reader: &mut IMuxSync<R>,
-        writer: &mut IMuxSync<W>,
+    // pub fn offline_server_protocol<R: Read + Send, W: Write + Send, RNG: CryptoRng + RngCore>(
+    pub fn offline_server_protocol<RNG: CryptoRng + RngCore>(
+        // reader: &mut IMuxSync<R>,
+        // writer: &mut IMuxSync<W>,
+        reader: &mut IMuxSync<CountingIO<BufReader<TcpStream>>>,
+        writer: &mut IMuxSync<CountingIO<BufWriter<TcpStream>>>,
         neural_network: &NeuralNetwork<AdditiveShare<P>, FixedPoint<P>>,
         rng: &mut RNG,
         batch_id: u16,
@@ -157,7 +163,6 @@ where
                 Layer::LL(layer) => {
                     let randomizer = match &layer {
                         LinearLayer::Conv2d { .. } | LinearLayer::FullyConnected { .. } => {
-
                             let weight_encoding = Instant::now();
                             let mut cg_handler = match &layer {
                                 LinearLayer::Conv2d { .. } => SealServerCG::Conv2D(
@@ -172,7 +177,8 @@ where
                                 },
                                 _ => unreachable!(),
                             };
-                            let weight_encoding_duration = weight_encoding.elapsed().as_micros() as u64;
+                            let weight_encoding_duration =
+                                weight_encoding.elapsed().as_micros() as u64;
 
                             conv_id += 1;
                             LinearProtocol::<P>::offline_server_protocol(
@@ -205,7 +211,14 @@ where
         let crate::gc::ServerState {
             encoders: relu_encoders,
             output_randomizers: relu_output_randomizers,
-        } = ReluProtocol::<P>::offline_server_protocol(reader, writer, num_relu, rng, batch_id, network_name)?;
+        } = ReluProtocol::<P>::offline_server_protocol(
+            reader,
+            writer,
+            num_relu,
+            rng,
+            batch_id,
+            network_name,
+        )?;
         timer_end!(relu_time);
 
         let approx_time = timer_start!(|| format!(
@@ -225,9 +238,12 @@ where
         })
     }
 
-    pub fn offline_client_protocol<R: Read + Send, W: Write + Send, RNG: RngCore + CryptoRng>(
-        reader: &mut IMuxSync<R>,
-        writer: &mut IMuxSync<W>,
+    // pub fn offline_client_protocol<R: Read + Send, W: Write + Send, RNG: RngCore + CryptoRng>(
+    pub fn offline_client_protocol<RNG: RngCore + CryptoRng>(
+        // reader: &mut IMuxSync<R>,
+        // writer: &mut IMuxSync<W>,
+        reader: &mut IMuxSync<CountingIO<BufReader<TcpStream>>>,
+        writer: &mut IMuxSync<CountingIO<BufWriter<TcpStream>>>,
         neural_network_architecture: &NeuralArchitecture<AdditiveShare<P>, FixedPoint<P>>,
         rng: &mut RNG,
         batch_id: u16,
@@ -406,9 +422,12 @@ where
         })
     }
 
-    pub fn online_server_protocol<R: Read + Send, W: Write + Send + Send>(
-        reader: &mut IMuxSync<R>,
-        writer: &mut IMuxSync<W>,
+    // pub fn online_server_protocol<R: Read + Send, W: Write + Send + Send>(
+    pub fn online_server_protocol(
+        // reader: &mut IMuxSync<R>,
+        // writer: &mut IMuxSync<W>,
+        reader: &mut IMuxSync<CountingIO<BufReader<TcpStream>>>,
+        writer: &mut IMuxSync<CountingIO<BufWriter<TcpStream>>>,
         neural_network: &NeuralNetwork<AdditiveShare<P>, FixedPoint<P>>,
         state: &ServerState<P>,
         batch_id: u16,
@@ -526,9 +545,12 @@ where
     }
 
     /// Outputs shares for the next round's input.
-    pub fn online_client_protocol<R: Read + Send, W: Write + Send + Send>(
-        reader: &mut IMuxSync<R>,
-        writer: &mut IMuxSync<W>,
+    // pub fn online_client_protocol<R: Read + Send, W: Write + Send + Send>(
+    pub fn online_client_protocol(
+        // reader: &mut IMuxSync<R>,
+        // writer: &mut IMuxSync<W>,
+        reader: &mut IMuxSync<CountingIO<BufReader<TcpStream>>>,
+        writer: &mut IMuxSync<CountingIO<BufWriter<TcpStream>>>,
         input: &Input<FixedPoint<P>>,
         architecture: &NeuralArchitecture<AdditiveShare<P>, FixedPoint<P>>,
         state: &ClientState<P>,
