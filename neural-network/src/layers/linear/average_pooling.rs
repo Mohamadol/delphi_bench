@@ -42,23 +42,57 @@ where
         (batch_size, out_channels, out_height, out_width)
     }
 
+    // pub fn avg_pool_naive(&self, input: &Input<F>, out: &mut Output<F>) {
+    //     let (batch_size, in_channels, in_height, in_width) = input.dim();
+    //     assert_eq!(in_height % (self.pool_h), 0);
+    //     assert_eq!(in_width % (self.pool_w), 0);
+
+    //     let out_dim = self.calculate_output_size(input.dim());
+    //     assert_eq!(out.dim(), out_dim);
+    //     for b_i in 0..batch_size {
+    //         for (out_i, i) in (0..in_height).step_by(self.stride).enumerate() {
+    //             for (out_j, j) in (0..in_width).step_by(self.stride).enumerate() {
+    //                 for chan in 0..in_channels {
+    //                     let mut sum = F::zero();
+    //                     for k_i in 0..self.pool_h {
+    //                         for k_j in 0..self.pool_w {
+    //                             sum += input[(b_i, chan, (i + k_i), (j + k_j))];
+    //                         }
+    //                     }
+    //                     out[(b_i, chan, out_i, out_j)] = sum * self.normalizer;
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    //--------------------------------- I think the avg pool is not implemented correctly originally (above)
+    //                                  I changed it as below to correct it                                 ---------------------------------
     pub fn avg_pool_naive(&self, input: &Input<F>, out: &mut Output<F>) {
         let (batch_size, in_channels, in_height, in_width) = input.dim();
         assert_eq!(in_height % (self.pool_h), 0);
         assert_eq!(in_width % (self.pool_w), 0);
 
         let out_dim = self.calculate_output_size(input.dim());
+        let (b, k, p, q) = out_dim;
+        // println!("dims: {} - {} - {} - {} - {}", b, k, in_channels, p, q);
         assert_eq!(out.dim(), out_dim);
         for b_i in 0..batch_size {
-            for (out_i, i) in (0..in_height).step_by(self.stride).enumerate() {
-                for (out_j, j) in (0..in_width).step_by(self.stride).enumerate() {
+            // for (out_i, i) in (0..in_height).step_by(self.stride).enumerate() {
+            // for (out_j, j) in (0..in_width).step_by(self.stride).enumerate() {
+            for (out_i, i) in (0..p).step_by(self.stride).enumerate() {
+                for (out_j, j) in (0..q).step_by(self.stride).enumerate() {
                     for chan in 0..in_channels {
+                        let mut iters = 0;
                         let mut sum = F::zero();
                         for k_i in 0..self.pool_h {
                             for k_j in 0..self.pool_w {
+                                iters += 1;
                                 sum += input[(b_i, chan, (i + k_i), (j + k_j))];
                             }
                         }
+
+                        // println!("total iterations are {}", iters);
                         out[(b_i, chan, out_i, out_j)] = sum * self.normalizer;
                     }
                 }
