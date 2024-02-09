@@ -30,6 +30,10 @@ use std::{
 use crate::csv_timing::*;
 use crate::ClientOfflineNonLinear;
 use crate::ClientOnlineNonLinear;
+use crate::CommClientOfflineNonLinear;
+use crate::CommClientOnlineNonLinear;
+use crate::CommServerOfflineNonLinear;
+use crate::CommServerOnlineNonLinear;
 use crate::ServerOfflineNonLinear;
 use crate::ServerOnlineNonLinear;
 use std::time::Instant;
@@ -107,6 +111,13 @@ where
             total_duration: 0,
         };
 
+        let mut comm = CommServerOfflineNonLinear {
+            gc_write: 0,
+            ot_write: 0,
+            ot_read: 0,
+        };
+        let (mut r_before, mut w_before) = (0, 0);
+
         let start_time = timer_start!(|| "ReLU offline protocol");
         let total_time = Instant::now();
 
@@ -170,8 +181,8 @@ where
         timer_end!(encode_time);
 
         //--------------------------------- GC communication ---------------------------------
+        w_before = writer.count(); // communication done so far
         let send_gc_time = timer_start!(|| "Sending GCs");
-
         let gc_communication_time = Instant::now();
         let randomizer_label_per_relu = if number_of_relus == 0 {
             8192
@@ -185,24 +196,36 @@ where
             let sent_message = ServerGcMsgSend::new(&msg_contents);
             crate::bytes::serialize(writer, &sent_message)?;
         }
-        timing.GC_communication += gc_communication_time.elapsed().as_micros() as u64;
 
+        timing.GC_communication += gc_communication_time.elapsed().as_micros() as u64;
         timer_end!(send_gc_time);
+        comm.gc_write = writer.count() - w_before; // GC writes in bytes
 
         //--------------------------------- OT communication ---------------------------------
+        {
+            let r_const = reader.get_ref().remove(0);
+            let w_const = writer.get_ref().remove(0);
+            r_before = r_const.count();
+            w_before = w_const.count();
+        }
+
         if number_of_relus != 0 {
             let r = reader.get_mut_ref().remove(0);
             let w = writer.get_mut_ref().remove(0);
-
             let ot_time = timer_start!(|| "OTs");
-
             let ot_communication_time = Instant::now();
             let mut channel = Channel::new(r, w);
             let mut ot = OTSender::init(&mut channel, rng).unwrap();
             ot.send(&mut channel, labels.as_slice(), rng).unwrap();
             timing.OT_communication += ot_communication_time.elapsed().as_micros() as u64;
-
             timer_end!(ot_time);
+        }
+
+        {
+            let r_const = reader.get_ref().remove(0);
+            let w_const = writer.get_ref().remove(0);
+            comm.ot_read = r_const.count() - r_before;
+            comm.ot_write = w_const.count() - w_before;
         }
 
         timing.total_duration += total_time.elapsed().as_micros() as u64;
@@ -217,6 +240,16 @@ where
             batch_id as u64,
         );
         write_to_csv(&timing, &file_name);
+
+        let comm_file_name = csv_file_name_comm(
+            network_name,
+            "server",
+            "offline",
+            "non_linear",
+            1 as u64,
+            batch_id as u64,
+        );
+        write_to_csv(&comm, &comm_file_name);
 
         Ok(ServerState {
             encoders,
@@ -242,6 +275,13 @@ where
             total_duration: 0,
         };
 
+        let mut comm = CommClientOfflineNonLinear {
+            gc_read: 0,
+            ot_write: 0,
+            ot_read: 0,
+        };
+        let (mut r_before, mut w_before) = (0, 0);
+
         use fancy_garbling::util::*;
         let start_time = timer_start!(|| "ReLU offline protocol");
 
@@ -251,6 +291,7 @@ where
         let field_size = crypto_primitives::gc::num_bits(p);
 
         //--------------------------------- GC receiving ---------------------------------
+        r_before = reader.count(); // communication done so far
         let rcv_gc_time = timer_start!(|| "Receiving GCs");
 
         let gc_communication_time = Instant::now();
@@ -268,10 +309,16 @@ where
             r_wires.extend(r_wire_chunks);
         }
         timing.GC_communication += gc_communication_time.elapsed().as_micros() as u64;
-
         timer_end!(rcv_gc_time);
+        comm.gc_read = reader.count() - r_before; // GC writes in bytes
 
         //--------------------------------- OT communication ---------------------------------
+        {
+            let r_const = reader.get_ref().remove(0);
+            let w_const = writer.get_ref().remove(0);
+            r_before = r_const.count();
+            w_before = w_const.count();
+        }
         let OT_communication_time = Instant::now();
         assert_eq!(gc_s.len(), number_of_relus);
         let bs = shares
@@ -300,6 +347,12 @@ where
             Vec::new()
         };
         timing.OT_communication += OT_communication_time.elapsed().as_micros() as u64;
+        {
+            let r_const = reader.get_ref().remove(0);
+            let w_const = writer.get_ref().remove(0);
+            comm.ot_read = r_const.count() - r_before;
+            comm.ot_write = w_const.count() - w_before;
+        }
 
         timing.total_duration += total_time.elapsed().as_micros() as u64;
         timer_end!(start_time);
@@ -313,6 +366,16 @@ where
             batch_id.into(),
         );
         write_to_csv(&timing, &file_name);
+
+        let comm_file_name = csv_file_name_comm(
+            network_name,
+            "client",
+            "offline",
+            "non_linear",
+            1 as u64,
+            batch_id as u64,
+        );
+        write_to_csv(&comm, &comm_file_name);
 
         Ok(ClientState {
             gc_s,
@@ -336,6 +399,11 @@ where
             communication: 0,
             total_duration: 0,
         };
+
+        let mut comm = CommServerOnlineNonLinear {
+            encoded_labels_write: 0,
+        };
+        let (mut r_before, mut w_before) = (0, 0);
 
         let p = u128::from(u64::from(P::Field::characteristic()));
 
@@ -361,14 +429,16 @@ where
         timer_end!(encoding_time);
 
         //--------------------------------- communication ---------------------------------
+        w_before = writer.count(); // communication done so far
+
         let send_time = timer_start!(|| "Sending inputs");
 
         let server_communication_time = Instant::now();
         let sent_message = ServerLabelMsgSend::new(wires.as_slice());
         let res = crate::bytes::serialize(writer, &sent_message);
         timing.communication += server_communication_time.elapsed().as_micros() as u64;
-
         timer_end!(send_time);
+        comm.encoded_labels_write = writer.count() - w_before; // GC writes in bytes
 
         timing.total_duration += total_time.elapsed().as_micros() as u64;
         timer_end!(start_time);
@@ -382,6 +452,16 @@ where
             batch_id as u64,
         );
         write_to_csv(&timing, &file_name);
+
+        let comm_file_name = csv_file_name_comm(
+            network_name,
+            "server",
+            "online",
+            "non_linear",
+            conv_id as u64,
+            batch_id as u64,
+        );
+        write_to_csv(&comm, &comm_file_name);
 
         res
     }
@@ -406,18 +486,24 @@ where
             total_duration: 0,
         };
 
+        let mut comm = CommClientOnlineNonLinear {
+            encoded_labels_read: 0,
+        };
+        let (mut r_before, mut w_before) = (0, 0);
+
         let start_time = timer_start!(|| "ReLU online protocol");
         let total_time = Instant::now();
 
         //--------------------------------- communication ---------------------------------
+        r_before = reader.count(); // communication done so far
         let rcv_time = timer_start!(|| "Receiving inputs");
 
         let communication_time = Instant::now();
         let in_msg: ClientLabelMsgRcv = crate::bytes::deserialize(reader)?;
         let mut garbler_wires = in_msg.msg();
         timing.communication += communication_time.elapsed().as_micros() as u64;
-
         timer_end!(rcv_time);
+        comm.encoded_labels_read = reader.count() - r_before; // GC writes in bytes
 
         //--------------------------------- GC evaluation ---------------------------------
         let eval_time = timer_start!(|| "Evaluating GCs");
@@ -468,6 +554,16 @@ where
             batch_id as u64,
         );
         write_to_csv(&timing, &file_name);
+
+        let comm_file_name = csv_file_name_comm(
+            network_name,
+            "client",
+            "online",
+            "non_linear",
+            conv_id as u64,
+            batch_id as u64,
+        );
+        write_to_csv(&comm, &comm_file_name);
 
         Ok(results)
     }

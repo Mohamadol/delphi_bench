@@ -30,6 +30,8 @@ pub type ServerKeyRcv = InMessage<Vec<std::os::raw::c_char>, KeygenType>;
 pub type ClientKeySend<'a> = OutMessage<'a, Vec<std::os::raw::c_char>, KeygenType>;
 
 //--------------------------------- added for benchmarking ---------------------------------
+
+//--------------------------------- latency profiling structs ---------------------------------
 pub mod csv_timing;
 #[derive(Serialize)]
 pub struct ServerOfflineLinear {
@@ -92,6 +94,53 @@ pub struct ClientOnlineNonLinear {
     GC_eval: u64,
     communication: u64,
     total_duration: u64,
+}
+
+//--------------------------------- communication profiling structs ---------------------------------
+#[derive(Serialize)]
+pub struct CommServerOfflineLinear {
+    ct_write: u64,
+    ct_read: u64,
+}
+
+#[derive(Serialize)]
+pub struct CommClientOfflineLinear {
+    ct_write: u64,
+    ct_read: u64,
+}
+
+#[derive(Serialize)]
+pub struct CommServerOfflineNonLinear {
+    gc_write: u64,
+    ot_write: u64,
+    ot_read: u64,
+}
+
+#[derive(Serialize)]
+pub struct CommClientOfflineNonLinear {
+    gc_read: u64,
+    ot_write: u64,
+    ot_read: u64,
+}
+
+#[derive(Serialize)]
+pub struct CommServerOnlineLinear {
+    read: u64,
+}
+
+#[derive(Serialize)]
+pub struct CommClientOnlineLinear {
+    write: u64,
+}
+
+#[derive(Serialize)]
+pub struct CommServerOnlineNonLinear {
+    encoded_labels_write: u64,
+}
+
+#[derive(Serialize)]
+pub struct CommClientOnlineNonLinear {
+    encoded_labels_read: u64,
 }
 
 #[derive(Serialize)]

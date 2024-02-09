@@ -5,7 +5,7 @@ use algebra::{
     FpParameters, PrimeField, UniformRandom,
 };
 use crypto_primitives::additive_share::Share;
-use io_utils::imux::IMuxSync;
+use io_utils::{counting::CountingIO, imux::IMuxSync};
 use neural_network::{
     layers::*,
     tensors::{Input, Output},
@@ -14,14 +14,19 @@ use neural_network::{
 use protocols_sys::{SealClientCG, SealServerCG, *};
 use rand::{CryptoRng, RngCore};
 use std::{
-    io::{Read, Write},
+    io::{BufReader, BufWriter, Read, Write},
     marker::PhantomData,
+    net::{TcpListener, TcpStream},
     os::raw::c_char,
 };
 
 use crate::csv_timing::*;
 use crate::ClientOfflineLinear;
 use crate::ClientOnlineLinear;
+use crate::CommClientOfflineLinear;
+use crate::CommClientOnlineLinear;
+use crate::CommServerOfflineLinear;
+use crate::CommServerOnlineLinear;
 use crate::ServerOfflineLinear;
 use crate::ServerOnlineLinear;
 use std::time::Instant;
@@ -49,9 +54,12 @@ where
     <P::Field as PrimeField>::Params: Fp64Parameters,
     P::Field: PrimeField<BigInt = <<P::Field as PrimeField>::Params as FpParameters>::BigInt>,
 {
-    pub fn offline_server_protocol<R: Read + Send, W: Write + Send, RNG: RngCore + CryptoRng>(
-        reader: &mut IMuxSync<R>,
-        writer: &mut IMuxSync<W>,
+    // pub fn offline_server_protocol<R: Read + Send, W: Write + Send, RNG: RngCore + CryptoRng>(
+    pub fn offline_server_protocol<RNG: RngCore + CryptoRng>(
+        // reader: &mut IMuxSync<R>,
+        // writer: &mut IMuxSync<W>,
+        reader: &mut IMuxSync<CountingIO<BufReader<TcpStream>>>,
+        writer: &mut IMuxSync<CountingIO<BufWriter<TcpStream>>>,
         _input_dims: (usize, usize, usize, usize),
         output_dims: (usize, usize, usize, usize),
         server_cg: &mut SealServerCG,
@@ -71,6 +79,12 @@ where
             output_CT_communication: 0,
             total_duration: weight_encoding_time,
         };
+
+        let mut comm = CommServerOfflineLinear {
+            ct_write: 0,
+            ct_read: 0,
+        };
+        let (mut r_before, mut w_before) = (0, 0);
 
         let start_time = timer_start!(|| "Server linear offline protocol");
 
@@ -96,18 +110,18 @@ where
         server_cg.preprocess(&server_randomness_c);
         timing.random_gen += server_random_gen.elapsed().as_micros() as u64;
 
-
         timer_end!(preprocess_time);
 
         // Receive client Enc(r_i)
         //--------------------------------- communication receiving input CTs ---------------------------------
+        r_before = reader.count(); // communication done so far
         let rcv_time = timer_start!(|| "Receiving Input");
         let input_ct_communication_time = Instant::now();
         let client_share: OfflineServerMsgRcv = crate::bytes::deserialize(reader)?;
         let client_share_i = client_share.msg();
         timing.input_CT_communication += input_ct_communication_time.elapsed().as_micros() as u64;
-
         timer_end!(rcv_time);
+        comm.ct_read = reader.count() - r_before; // GC writes in bytes
 
         // Compute client's share for layer `i + 1`.
         // That is, compute -Lr + s
@@ -121,14 +135,14 @@ where
         timer_end!(processing);
 
         //--------------------------------- communication output CT sending ---------------------------------
+        w_before = writer.count(); // communication done so far
         let send_time = timer_start!(|| "Sending result");
-
         let output_ct_communication_time = Instant::now();
         let sent_message = OfflineServerMsgSend::new(&enc_result_vec);
         crate::bytes::serialize(writer, &sent_message)?;
         timing.output_CT_communication += output_ct_communication_time.elapsed().as_micros() as u64;
-
         timer_end!(send_time);
+        comm.ct_write = writer.count() - w_before; // GC writes in bytes
 
         timing.total_duration += total_time.elapsed().as_micros() as u64;
         timer_end!(start_time);
@@ -143,20 +157,33 @@ where
         );
         write_to_csv(&timing, &file_name);
 
+        let comm_file_name = csv_file_name_comm(
+            network_name,
+            "server",
+            "offline",
+            "linear",
+            layer_id.into(),
+            batch_id.into(),
+        );
+        write_to_csv(&comm, &comm_file_name);
+
         Ok(server_randomness)
     }
 
     // Output randomness to share the input in the online phase, and an additive
     // share of the output of after the linear function has been applied.
     // Basically, r and -(Lr + s).
-    pub fn offline_client_protocol<
-        'a,
-        R: Read + Send,
-        W: Write + Send,
-        RNG: RngCore + CryptoRng,
-    >(
-        reader: &mut IMuxSync<R>,
-        writer: &mut IMuxSync<W>,
+    // pub fn offline_client_protocol<
+    //     'a,
+    //     R: Read + Send,
+    //     W: Write + Send,
+    //     RNG: RngCore + CryptoRng,
+    // >(
+    pub fn offline_client_protocol<'a, RNG: RngCore + CryptoRng>(
+        // reader: &mut IMuxSync<R>,
+        // writer: &mut IMuxSync<W>,
+        reader: &mut IMuxSync<CountingIO<BufReader<TcpStream>>>,
+        writer: &mut IMuxSync<CountingIO<BufWriter<TcpStream>>>,
         input_dims: (usize, usize, usize, usize),
         output_dims: (usize, usize, usize, usize),
         client_cg: &mut SealClientCG,
@@ -173,6 +200,12 @@ where
             output_CT_communication: 0,
             total_duration: 0,
         };
+
+        let mut comm = CommClientOfflineLinear {
+            ct_write: 0,
+            ct_read: 0,
+        };
+        let (mut r_before, mut w_before) = (0, 0);
 
         let start_time = timer_start!(|| "Linear offline protocol");
         let total_time = Instant::now();
@@ -196,23 +229,23 @@ where
 
         // Send layer_i randomness for processing by server.
         //--------------------------------- communication sending input CTs ---------------------------------
+        w_before = writer.count(); // communication done so far
         let send_time = timer_start!(|| "Sending input");
-
         let input_ct_communication_time = Instant::now();
         let sent_message = OfflineClientMsgSend::new(&ct_vec);
         crate::bytes::serialize(writer, &sent_message)?;
         timing.input_CT_communication += input_ct_communication_time.elapsed().as_micros() as u64;
-
         timer_end!(send_time);
+        comm.ct_write = writer.count() - w_before; // GC writes in bytes
 
         //--------------------------------- communication receiving output CTs ---------------------------------
+        r_before = reader.count(); // communication done so far
         let rcv_time = timer_start!(|| "Receiving Result");
-
         let output_ct_communication_time = Instant::now();
         let enc_result: OfflineClientMsgRcv = crate::bytes::deserialize(reader)?;
         timing.output_CT_communication += output_ct_communication_time.elapsed().as_micros() as u64;
-
         timer_end!(rcv_time);
+        comm.ct_read = reader.count() - r_before; // GC writes in bytes
 
         //--------------------------------- decryption ---------------------------------
         let post_time = timer_start!(|| "Post-processing");
@@ -248,11 +281,23 @@ where
         );
         write_to_csv(&timing, &file_name);
 
+        let comm_file_name = csv_file_name_comm(
+            network_name,
+            "client",
+            "offline",
+            "linear",
+            layer_id.into(),
+            batch_id.into(),
+        );
+        write_to_csv(&comm, &comm_file_name);
+
         Ok((layer_randomness.into(), client_share_next))
     }
 
-    pub fn online_client_protocol<W: Write + Send>(
-        writer: &mut IMuxSync<W>,
+    // pub fn online_client_protocol<W: Write + Send>(
+    pub fn online_client_protocol(
+        // writer: &mut IMuxSync<W>,
+        writer: &mut IMuxSync<CountingIO<BufWriter<TcpStream>>>,
         x_s: &Input<AdditiveShare<P>>,
         layer: &LinearLayerInfo<AdditiveShare<P>, FixedPoint<P>>,
         next_layer_input: &mut Output<AdditiveShare<P>>,
@@ -265,15 +310,20 @@ where
             total_duration: 0,
         };
 
+        let mut comm = CommClientOnlineLinear { write: 0 };
+        let (mut r_before, mut w_before) = (0, 0);
+
         let start = timer_start!(|| "Linear online protocol");
         let total_time = Instant::now();
 
         match layer {
             LinearLayerInfo::Conv2d { .. } | LinearLayerInfo::FullyConnected => {
+                w_before = writer.count(); // communication done so far
                 let communication_time = Instant::now();
                 let sent_message = MsgSend::new(x_s);
                 crate::bytes::serialize(writer, &sent_message)?;
                 timing.communication += communication_time.elapsed().as_micros() as u64;
+                comm.write = writer.count() - w_before; // GC writes in bytes
             },
             _ => {
                 layer.evaluate_naive(x_s, next_layer_input);
@@ -296,11 +346,23 @@ where
         );
         write_to_csv(&timing, &file_name);
 
+        let comm_file_name = csv_file_name_comm(
+            network_name,
+            "client",
+            "online",
+            "linear",
+            layer_id.into(),
+            batch_id.into(),
+        );
+        write_to_csv(&comm, &comm_file_name);
+
         Ok(())
     }
 
-    pub fn online_server_protocol<R: Read + Send>(
-        reader: &mut IMuxSync<R>,
+    // pub fn online_server_protocol<R: Read + Send>(
+    pub fn online_server_protocol(
+        // reader: &mut IMuxSync<R>,
+        reader: &mut IMuxSync<CountingIO<BufReader<TcpStream>>>,
         layer: &LinearLayer<AdditiveShare<P>, FixedPoint<P>>,
         output_rerandomizer: &Output<P::Field>,
         input_derandomizer: &Input<P::Field>,
@@ -315,16 +377,20 @@ where
             total_duration: 0,
         };
 
+        let mut comm = CommServerOnlineLinear { read: 0 };
+        let (mut r_before, mut w_before) = (0, 0);
+
         let start = timer_start!(|| "Linear online protocol");
         let total_time = Instant::now();
 
         // Receive client share and compute layer if conv or fc
         let mut input: Input<AdditiveShare<P>> = match &layer {
             LinearLayer::Conv2d { .. } | LinearLayer::FullyConnected { .. } => {
+                r_before = reader.count(); // communication done so far
                 let communication_time = Instant::now();
                 let recv: MsgRcv<P> = crate::bytes::deserialize(reader).unwrap();
                 timing.communication += communication_time.elapsed().as_micros() as u64;
-
+                comm.read = reader.count() - r_before; // GC writes in bytes
                 recv.msg()
             },
             _ => Input::zeros(input_derandomizer.dim()),
@@ -350,6 +416,16 @@ where
             batch_id.into(),
         );
         write_to_csv(&timing, &file_name);
+
+        let comm_file_name = csv_file_name_comm(
+            network_name,
+            "server",
+            "online",
+            "linear",
+            layer_id.into(),
+            batch_id.into(),
+        );
+        write_to_csv(&comm, &comm_file_name);
 
         Ok(())
     }

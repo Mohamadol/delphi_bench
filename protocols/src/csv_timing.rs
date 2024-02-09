@@ -31,7 +31,40 @@ pub fn csv_file_name_network(network: &str, system: &str, phase: &str, batch_id:
     create_directory_if_not_exists(&csv_file).expect("Error creating directory");
 
     csv_file.push_str("/");
+    csv_file.push_str("total_communication");
+    csv_file.push_str(".csv");
+    csv_file
+}
+
+pub fn csv_file_name_comm(
+    network: &str,
+    system: &str,
+    phase: &str,
+    subroutine: &str,
+    conv_id: u64,
+    batch_id: u64,
+) -> String {
+    let mut csv_file = String::new();
+    csv_file.push_str("/mnt/mohammad/delphi_bench/benchmarking/data");
+    csv_file.push_str("/");
+    csv_file.push_str(network);
+    csv_file.push_str("/");
+    csv_file.push_str(system);
+    csv_file.push_str("/");
+    csv_file.push_str(phase);
+    csv_file.push_str("/");
+    csv_file.push_str(subroutine);
+    csv_file.push_str("/");
+    csv_file.push_str("_batch__");
+    csv_file.push_str(&batch_id.to_string());
+    csv_file.push_str("/");
     csv_file.push_str("communication");
+
+    create_directory_if_not_exists(&csv_file).expect("Error creating directory");
+
+    csv_file.push_str("/");
+    csv_file.push_str("layer_");
+    csv_file.push_str(&conv_id.to_string());
     csv_file.push_str(".csv");
     csv_file
 }
@@ -57,6 +90,8 @@ pub fn csv_file_name(
     csv_file.push_str("/");
     csv_file.push_str("_batch__");
     csv_file.push_str(&batch_id.to_string());
+    csv_file.push_str("/");
+    csv_file.push_str("latency");
 
     create_directory_if_not_exists(&csv_file).expect("Error creating directory");
 
