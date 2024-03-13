@@ -55,7 +55,7 @@ pip3 install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url http
 echo "export LIBTORCH_USE_PYTORCH=0" >> ~/.bashrc
 echo "export LIBTORCH_INCLUDE=/home/parinazzhandy/.local/lib/python3.10/site-packages/torch/include/" >> ~/.bashrc
 echo "export LD_LIBRARY_PATH=/home/parinazzhandy/.local/lib/python3.10/site-packages/torch/lib/" >> ~/.bashrc
-echo "export LIBTORCH_LIB=/home/parinazzhandy/.local/lib/python3.10/site-packages/torch/lib/"" >> ~/.bashrc
+echo "export LIBTORCH_LIB=/home/parinazzhandy/.local/lib/python3.10/site-packages/torch/lib/" >> ~/.bashrc
 source ~/.bashrc
 
 sudo apt install -y libssl-dev pkg-config libclang-dev
@@ -65,6 +65,7 @@ cd /mnt/mohammad
 DELPHI_BENCH="https://github.com/Mohamadol/delphi_bench.git"
 git clone $DELPHI_BENCH
 cd delphi_bench
-cargo build --release
+rustup install nightly-2023-06-03
+cargo +nightly-2023-06-03 build --release
 
 
