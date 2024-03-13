@@ -65,7 +65,7 @@ cd /mnt/mohammad
 DELPHI_BENCH="https://github.com/Mohamadol/delphi_bench.git"
 git clone $DELPHI_BENCH
 cd delphi_bench
-rustup install nightly-2023-12-01
-cargo +nightly build --release
+rustup install nightly-2023-06-03
+cargo +nightly-2023-06-03 build --release
 
 
