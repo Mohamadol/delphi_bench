@@ -33,6 +33,7 @@ fn main() {
     );
     let server_addr = format!("0.0.0.0:{}", 8001 + batch_id);
     let network = construct_resnet18_model(Some(&vs.root()), 8, &mut rng);
-    let network_name = "resnet18";
+    // let network_name = "resnet18";
+    let network_name = &args[2];
     experiments::nn_server(&server_addr, &network, &mut rng, batch_id, network_name);
 }
