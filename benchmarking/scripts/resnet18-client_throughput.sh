@@ -13,17 +13,9 @@ BATCH=8
 
 start=$(date +%s%N)
 pids=()
-for i in {1..1}
-do
-    echo "Starting client for batch $i"
-    $PROGRAM $i $EXP_NAME > "${OUTDIR}/_batch_${i}.out" 2>&1
-done
-
-
-
 for ((i=1; i<=BATCH; i++))
 do
-    cho "Starting client for batch $i"
+    echo "Starting client for batch $i"
     $PROGRAM "$i" "$EXP_NAME" > "${OUTDIR}/_batch_${i}.out" &
     pids+=($!)
 done
@@ -38,4 +30,4 @@ end=$(date +%s%N)
 
 # Calculate duration in milliseconds
 duration=$(( (end - start) / 1000000 ))
-echo "Total duration: $duration ms" > "${OUT_DIR}/time_elapsed.txt"
+echo "Total duration: $duration ms" > "${OUTDIR}/time_elapsed.txt"
