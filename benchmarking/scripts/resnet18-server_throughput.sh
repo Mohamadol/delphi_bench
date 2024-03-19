@@ -11,11 +11,12 @@ mkdir -p $DATADIR
 BATCH=8
 
 
+
 start=$(date +%s%N)
 pids=()
 for ((i=1; i<=BATCH; i++))
 do
-    cho "Starting server for batch $i"
+    echo "Starting server for batch $i"
     $PROGRAM "$i" "$EXP_NAME" > "${OUTDIR}/_batch_${i}.out" &
     pids+=($!)
 done
@@ -30,4 +31,4 @@ end=$(date +%s%N)
 
 # Calculate duration in milliseconds
 duration=$(( (end - start) / 1000000 ))
-echo "Total duration: $duration ms" > "${OUT_DIR}/time_elapsed.txt"
+echo "Total duration: $duration ms" > "${OUTDIR}/time_elapsed.txt"
