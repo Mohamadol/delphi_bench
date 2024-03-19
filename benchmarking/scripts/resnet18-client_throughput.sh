@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BATCH=3
+BATCH=8
 MEMORY=120
 CORES=32
 network="resnet18"
