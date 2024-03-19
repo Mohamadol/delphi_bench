@@ -140,6 +140,9 @@ where
         neural_network: &NeuralNetwork<AdditiveShare<P>, FixedPoint<P>>,
         rng: &mut RNG,
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         network_name: &str,
     ) -> Result<ServerState<P>, bincode::Error> {
         let mut num_relu = 0;
@@ -190,6 +193,9 @@ where
                                 rng,
                                 conv_id,
                                 batch_id,
+                                batch_size,
+                                cores,
+                                memory,
                                 network_name,
                                 weight_encoding_duration,
                             )?
@@ -217,6 +223,9 @@ where
             num_relu,
             rng,
             batch_id,
+            batch_size,
+            cores,
+            memory,
             network_name,
         )?;
         timer_end!(relu_time);
@@ -247,6 +256,9 @@ where
         neural_network_architecture: &NeuralArchitecture<AdditiveShare<P>, FixedPoint<P>>,
         rng: &mut RNG,
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         network_name: &str,
     ) -> Result<ClientState<P>, bincode::Error> {
         let mut num_relu = 0;
@@ -306,6 +318,9 @@ where
                                 rng,
                                 conv_id,
                                 batch_id,
+                                batch_size,
+                                cores,
+                                memory,
                                 network_name,
                             )?
                         },
@@ -374,6 +389,9 @@ where
             current_layer_shares.as_slice(),
             rng,
             batch_id,
+            batch_size,
+            cores,
+            memory,
             network_name,
         )?;
 
@@ -431,6 +449,9 @@ where
         neural_network: &NeuralNetwork<AdditiveShare<P>, FixedPoint<P>>,
         state: &ServerState<P>,
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         network_name: &str,
     ) -> Result<(), bincode::Error> {
         let (first_layer_in_dims, first_layer_out_dims) = {
@@ -464,6 +485,9 @@ where
                         &next_layer_input.as_slice().unwrap(),
                         layer_encoders,
                         batch_id,
+                        batch_size,
+                        cores,
+                        memory,
                         conv_id,
                         network_name,
                     )?;
@@ -525,6 +549,9 @@ where
                         &mut next_layer_input,
                         conv_id,
                         batch_id,
+                        batch_size,
+                        cores,
+                        memory,
                         network_name,
                     )?;
                     next_layer_derandomizer = Output::zeros(layer.output_dimensions());
@@ -555,6 +582,9 @@ where
         architecture: &NeuralArchitecture<AdditiveShare<P>, FixedPoint<P>>,
         state: &ClientState<P>,
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         network_name: &str,
     ) -> Result<Output<FixedPoint<P>>, bincode::Error> {
         let first_layer_in_dims = {
@@ -615,6 +645,9 @@ where
                                 &layer_circuits,         // circuits for layer.
                                 &next_layer_randomizers, // circuits for layer.
                                 batch_id,
+                                batch_size,
+                                cores,
+                                memory,
                                 conv_id,
                                 network_name,
                             )?;
@@ -666,6 +699,9 @@ where
                         &mut next_layer_input,
                         conv_id,
                         batch_id,
+                        batch_size,
+                        cores,
+                        memory,
                         network_name,
                     )?;
                     // If this is not the last layer, and if the next layer

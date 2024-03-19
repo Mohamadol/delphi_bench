@@ -8,7 +8,7 @@ OUTDIR="/mnt/mohammad/delphi_bench/benchmarking/outputs/${EXP_NAME}/client"
 DATADIR="/mnt/mohammad/delphi_bench/benchmarking/data/${EXP_NAME}/client"
 mkdir -p $OUTDIR
 mkdir -p $DATADIR
-BATCH=8
+BATCH=3
 
 
 start=$(date +%s%N)

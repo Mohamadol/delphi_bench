@@ -57,12 +57,15 @@ pub fn run(
         let mut client_output = Output::zeros((1, 10, 0, 0));
         crossbeam::thread::scope(|s| {
             let server_output =
-                s.spawn(|_| nn_server(&server_addr, &network, &mut server_rng, 1, "cnn_name"));
+                s.spawn(|_| nn_server(&server_addr, &network, &mut server_rng, 1, 1,1,1,"cnn_name"));
             client_output = nn_client(
                 &server_addr,
                 &architecture,
                 (images[i].clone()).into(),
                 &mut client_rng,
+                1,
+                1,
+                1,
                 1,
                 "cnn_name",
             );

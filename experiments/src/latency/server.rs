@@ -70,6 +70,9 @@ fn cg_helper<R: RngCore + CryptoRng>(
                             rng,
                             1,
                             1,
+                            1,
+                            1,
+                            1,
                             "",
                             weight_encoding_duration,
                         )

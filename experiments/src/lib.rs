@@ -128,6 +128,9 @@ pub fn nn_client<R: RngCore + CryptoRng>(
     input: Input<TenBitExpFP>,
     rng: &mut R,
     batch_id: u16,
+    batch_size: u16,
+    cores: u16,
+    memory: u16,
     network_name: &str,
 ) -> Input<TenBitExpFP> {
     let (client_state, offline_read, offline_write) = {
@@ -139,6 +142,9 @@ pub fn nn_client<R: RngCore + CryptoRng>(
                 &architecture,
                 rng,
                 batch_id,
+                batch_size,
+                cores,
+                memory,
                 network_name,
             )
             .unwrap(),
@@ -157,6 +163,9 @@ pub fn nn_client<R: RngCore + CryptoRng>(
                 &architecture,
                 &client_state,
                 batch_id,
+                batch_size,
+                cores,
+                memory,
                 network_name,
             )
             .unwrap(),
@@ -176,9 +185,9 @@ pub fn nn_client<R: RngCore + CryptoRng>(
     };
 
     let offline_communication_file =
-        csv_file_name_network(network_name, "client", "offline", batch_id as u64);
+        csv_file_name_network(network_name, "client", "offline", batch_id as u64, batch_size as u64, cores as u64, memory as u64);
     let online_communication_file =
-        csv_file_name_network(network_name, "client", "online", batch_id as u64);
+        csv_file_name_network(network_name, "client", "online", batch_id as u64, batch_size as u64, cores as u64, memory as u64);
     write_to_csv(&offline_communication, &offline_communication_file);
     write_to_csv(&online_communication, &online_communication_file);
 
@@ -198,12 +207,15 @@ pub fn nn_server<R: RngCore + CryptoRng>(
     nn: &NeuralNetwork<TenBitAS, TenBitExpFP>,
     rng: &mut R,
     batch_id: u16,
+    batch_size: u16,
+    cores: u16,
+    memory: u16,
     network_name: &str,
 ) {
     let (server_state, offline_read, offline_write) = {
         let (mut reader, mut writer) = server_connect(server_addr);
         (
-            NNProtocol::offline_server_protocol(&mut reader, &mut writer, &nn, rng, batch_id, network_name)
+            NNProtocol::offline_server_protocol(&mut reader, &mut writer, &nn, rng, batch_id, batch_size, cores, memory, network_name)
                 .unwrap(),
             reader.count(),
             writer.count(),
@@ -219,6 +231,9 @@ pub fn nn_server<R: RngCore + CryptoRng>(
                 &nn,
                 &server_state,
                 batch_id,
+                batch_size,
+                cores,
+                memory,
                 network_name,
             )
             .unwrap(),
@@ -237,9 +252,9 @@ pub fn nn_server<R: RngCore + CryptoRng>(
         writes: online_write,
     };
     let offline_communication_file =
-        csv_file_name_network(network_name, "server", "offline", batch_id as u64);
+        csv_file_name_network(network_name, "server", "offline", batch_id as u64, batch_size as u64, cores as u64, memory as u64);
     let online_communication_file =
-        csv_file_name_network(network_name, "server", "online", batch_id as u64);
+        csv_file_name_network(network_name, "server", "online", batch_id as u64, batch_size as u64, cores as u64, memory as u64);
     write_to_csv(&offline_communication, &offline_communication_file);
     write_to_csv(&online_communication, &online_communication_file);
 

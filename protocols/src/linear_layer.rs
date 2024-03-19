@@ -66,6 +66,9 @@ where
         rng: &mut RNG,
         layer_id: u16,
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         network_name: &str,
         weight_encoding_time: u64,
     ) -> Result<Output<P::Field>, bincode::Error> {
@@ -154,6 +157,9 @@ where
             "linear",
             layer_id.into(),
             batch_id.into(),
+            batch_size.into(),
+            cores.into(),
+            memory.into(),
         );
         write_to_csv(&timing, &file_name);
 
@@ -164,6 +170,9 @@ where
             "linear",
             layer_id.into(),
             batch_id.into(),
+            batch_size.into(),
+            cores.into(),
+            memory.into(),
         );
         write_to_csv(&comm, &comm_file_name);
 
@@ -190,6 +199,9 @@ where
         rng: &mut RNG,
         layer_id: u16,
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         network_name: &str,
     ) -> Result<(Input<P::Field>, Output<AdditiveShare<P>>), bincode::Error> {
         let mut timing = ClientOfflineLinear {
@@ -278,6 +290,9 @@ where
             "linear",
             layer_id.into(),
             batch_id.into(),
+            batch_size.into(),
+            cores.into(),
+            memory.into(),
         );
         write_to_csv(&timing, &file_name);
 
@@ -288,6 +303,9 @@ where
             "linear",
             layer_id.into(),
             batch_id.into(),
+            batch_size.into(),
+            cores.into(),
+            memory.into(),
         );
         write_to_csv(&comm, &comm_file_name);
 
@@ -303,6 +321,9 @@ where
         next_layer_input: &mut Output<AdditiveShare<P>>,
         layer_id: u16,
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         network_name: &str,
     ) -> Result<(), bincode::Error> {
         let mut timing = ClientOnlineLinear {
@@ -343,6 +364,9 @@ where
             "linear",
             layer_id.into(),
             batch_id.into(),
+            batch_size.into(),
+            cores.into(),
+            memory.into(),
         );
         write_to_csv(&timing, &file_name);
 
@@ -353,6 +377,9 @@ where
             "linear",
             layer_id.into(),
             batch_id.into(),
+            batch_size.into(),
+            cores.into(),
+            memory.into(),
         );
         write_to_csv(&comm, &comm_file_name);
 
@@ -369,6 +396,9 @@ where
         output: &mut Output<AdditiveShare<P>>,
         layer_id: u16,
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         network_name: &str,
     ) -> Result<(), bincode::Error> {
         let mut timing = ServerOnlineLinear {
@@ -414,6 +444,9 @@ where
             "linear",
             layer_id.into(),
             batch_id.into(),
+            batch_size.into(),
+            cores.into(),
+            memory.into(),
         );
         write_to_csv(&timing, &file_name);
 
@@ -424,6 +457,9 @@ where
             "linear",
             layer_id.into(),
             batch_id.into(),
+            batch_size.into(),
+            cores.into(),
+            memory.into(),
         );
         write_to_csv(&comm, &comm_file_name);
 

@@ -101,6 +101,9 @@ where
         number_of_relus: usize,
         rng: &mut RNG,
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         network_name: &str,
     ) -> Result<ServerState<P>, bincode::Error> {
         let mut timing = ServerOfflineNonLinear {
@@ -238,6 +241,9 @@ where
             "non_linear",
             1 as u64,
             batch_id as u64,
+            batch_size as u64,
+            cores as u64,
+            memory as u64,
         );
         write_to_csv(&timing, &file_name);
 
@@ -248,6 +254,9 @@ where
             "non_linear",
             1 as u64,
             batch_id as u64,
+            batch_size as u64,
+            cores as u64,
+            memory as u64,
         );
         write_to_csv(&comm, &comm_file_name);
 
@@ -267,6 +276,9 @@ where
         shares: &[AdditiveShare<P>],
         rng: &mut RNG,
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         network_name: &str,
     ) -> Result<ClientState, bincode::Error> {
         let mut timing = ClientOfflineNonLinear {
@@ -364,6 +376,9 @@ where
             "non_linear",
             1 as u64,
             batch_id.into(),
+            batch_size as u64,
+            cores as u64,
+            memory as u64,
         );
         write_to_csv(&timing, &file_name);
 
@@ -374,6 +389,9 @@ where
             "non_linear",
             1 as u64,
             batch_id as u64,
+            batch_size as u64,
+            cores as u64,
+            memory as u64,
         );
         write_to_csv(&comm, &comm_file_name);
 
@@ -391,6 +409,9 @@ where
         shares: &[AdditiveShare<P>],
         encoders: &[Encoder],
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         conv_id: u16,
         network_name: &str,
     ) -> Result<(), bincode::Error> {
@@ -450,6 +471,9 @@ where
             "non_linear",
             conv_id as u64,
             batch_id as u64,
+            batch_size as u64,
+            cores as u64,
+            memory as u64,
         );
         write_to_csv(&timing, &file_name);
 
@@ -460,6 +484,9 @@ where
             "non_linear",
             conv_id as u64,
             batch_id as u64,
+            batch_size as u64,
+            cores as u64,
+            memory as u64,
         );
         write_to_csv(&comm, &comm_file_name);
 
@@ -477,6 +504,9 @@ where
         evaluators: &[GarbledCircuit],
         next_layer_randomizers: &[P::Field],
         batch_id: u16,
+        batch_size: u16,
+        cores: u16,
+        memory: u16,
         conv_id: u16,
         network_name: &str,
     ) -> Result<Vec<AdditiveShare<P>>, bincode::Error> {
@@ -552,6 +582,9 @@ where
             "non_linear",
             conv_id as u64,
             batch_id as u64,
+            batch_size as u64,
+            cores as u64,
+            memory as u64,
         );
         write_to_csv(&timing, &file_name);
 
@@ -562,6 +595,9 @@ where
             "non_linear",
             conv_id as u64,
             batch_id as u64,
+            batch_size as u64,
+            cores as u64,
+            memory as u64,
         );
         write_to_csv(&comm, &comm_file_name);
 

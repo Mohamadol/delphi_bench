@@ -32,6 +32,9 @@ pub fn nn_client<R: RngCore + CryptoRng>(
     architecture: NeuralArchitecture<TenBitAS, TenBitExpFP>,
     rng: &mut R,
     batch_id: u16,
+    batch_size: u16,
+    cores: u16,
+    memory: u16,
     network_name: &str,
 ) {
     // Sample a random input.
@@ -47,6 +50,9 @@ pub fn nn_client<R: RngCore + CryptoRng>(
         input,
         rng,
         batch_id,
+        batch_size,
+        cores,
+        memory,
         network_name,
     );
 }
@@ -98,6 +104,9 @@ fn cg_helper<R: RngCore + CryptoRng>(
                             rng,
                             1,
                             1,
+                            1,
+                            8, 
+                            8,
                             "",
                         )
                         .unwrap()
