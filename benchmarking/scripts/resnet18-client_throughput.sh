@@ -1,10 +1,10 @@
 #!/bin/bash
 
-BATCH=1
+BATCH=8
 MEMORY=30
 CORES=8
 network="resnet18"
-EXTRA="_throughput"
+EXTRA="_throughput_swap"
 EXP_NAME="${network}${EXTRA}"
 PROGRAM="/mnt/mohammad/delphi_bench/target/release/${network}-client"
 OUTDIR="/mnt/mohammad/delphi_bench/benchmarking/outputs/${EXP_NAME}/_${CORES}_${CORES}_${MEMORY}_${MEMORY}/_${BATCH}__batch/client"
@@ -14,7 +14,16 @@ mkdir -p $DATADIR
 
 
 start=$(date +%s%N)
-pids=()
+# pids=()
+declare -a pids
+cleanup() {
+    echo "Cleaning up..."
+    for pid in "${pids[@]}"; do
+        kill "$pid" 2>/dev/null
+    done
+}
+trap cleanup SIGINT SIGTERM
+
 for ((i=1; i<=BATCH; i++))
 do
     echo "Starting client for batch $i"
