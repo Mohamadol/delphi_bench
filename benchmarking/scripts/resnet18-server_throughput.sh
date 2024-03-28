@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BATCH=4
+BATCH=8
 MEMORY=30
 CORES=8
 network="resnet18"
@@ -14,7 +14,16 @@ mkdir -p $DATADIR
 
 
 start=$(date +%s%N)
-pids=()
+# pids=()
+declare -a pids
+cleanup() {
+    echo "Cleaning up..."
+    for pid in "${pids[@]}"; do
+        kill "$pid" 2>/dev/null
+    done
+}
+trap cleanup SIGINT SIGTERM
+
 for ((i=1; i<=BATCH; i++))
 do
     echo "Starting server for batch $i"

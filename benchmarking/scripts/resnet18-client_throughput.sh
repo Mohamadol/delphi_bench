@@ -1,10 +1,10 @@
 #!/bin/bash
 
-BATCH=1
+BATCH=4
 MEMORY=30
 CORES=8
 network="resnet18"
-EXTRA="_throughput"
+EXTRA="_throughput_swap"
 EXP_NAME="${network}${EXTRA}"
 PROGRAM="/mnt/mohammad/delphi_bench/target/release/${network}-client"
 OUTDIR="/mnt/mohammad/delphi_bench/benchmarking/outputs/${EXP_NAME}/_${CORES}_${CORES}_${MEMORY}_${MEMORY}/_${BATCH}__batch/client"
