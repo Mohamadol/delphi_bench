@@ -1,8 +1,8 @@
 #!/bin/bash
 
-BATCH=8
-MEMORY=30
-CORES=8
+BATCH=16
+MEMORY=60
+CORES=16
 network="resnet18"
 EXTRA="_throughput_swap"
 EXP_NAME="${network}${EXTRA}"
