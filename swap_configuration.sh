@@ -1,5 +1,6 @@
 sudo mkdir -p /mnt/mohammad/swap
-sudo fallocate -l 64G /mnt/mohammad/swap/swapfile
+sudo fallocate -l 400sudo swapoff /mnt/swapfile
+G /mnt/mohammad/swap/swapfile
 sudo chmod 600 /mnt/mohammad/swap/swapfile
 sudo mkswap /mnt/mohammad/swap/swapfile
 sudo swapon /mnt/mohammad/swap/swapfile
