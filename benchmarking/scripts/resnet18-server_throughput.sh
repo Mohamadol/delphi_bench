@@ -1,8 +1,8 @@
 #!/bin/bash
 
-BATCH=4
-MEMORY=60
-CORES=16
+BATCH=8
+MEMORY=120
+CORES=32
 network="resnet18"
 EXTRA=""
 EXP_NAME="${network}${EXTRA}"
