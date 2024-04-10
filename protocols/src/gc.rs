@@ -793,7 +793,7 @@ where
             }
 
             //--------------------------------- offseting the tile input data ---------------------------------
-            let tile_encoders = if !tiled {
+            let tile_encoders = if tiled {
                 garbler_offline_data.encoders.as_slice()
             } else {
                 &encoders[start_index..end_index]

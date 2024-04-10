@@ -1,0 +1,33 @@
+spawning server thread for port batch ID 1 and port 8002
+Start:   Receiving keys
+End:     Receiving keys.............................................................858.201ms
+Start:   Server offline phase
+··Start:   Linear layers offline phase
+····Start:   Server linear offline protocol
+······Start:   Preprocessing
+······End:     Preprocessing........................................................4.220ms
+······Start:   Receiving Input
+······End:     Receiving Input......................................................14.917ms
+······Start:   Processing Layer
+······End:     Processing Layer.....................................................2.275s
+······Start:   Sending result
+······End:     Sending result.......................................................17.603ms
+····End:     Server linear offline protocol.........................................2.311s
+····Start:   Server linear offline protocol
+······Start:   Preprocessing
+······End:     Preprocessing........................................................4.383ms
+······Start:   Receiving Input
+······End:     Receiving Input......................................................123.396ms
+······Start:   Processing Layer
+······End:     Processing Layer.....................................................18.16s
+······Start:   Sending result
+······End:     Sending result.......................................................14.790ms
+····End:     Server linear offline protocol.........................................18.159s
+··End:     Linear layers offline phase..............................................21.799s
+··Start:   ReLU layers offline phase, with 100352 activations
+····Start:   ReLU offline protocol
+······Start:   Garbling
+······End:     Garbling.............................................................1.62s
+······Start:   Encoding inputs
+······End:     Encoding inputs......................................................354.799ms
+······Start:   Sending GCs

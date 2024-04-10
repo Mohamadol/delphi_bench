@@ -40,3 +40,6 @@ rand_chacha = { version = "0.1.1" }
 
 [features]
 timer = ["bench-utils/timer"]
+
+[profile.release]
+debug = true

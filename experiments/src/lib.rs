@@ -237,24 +237,25 @@ pub fn nn_server<R: RngCore + CryptoRng>(
 ) {
     let (server_state, offline_read, offline_write) = {
         let (mut reader, mut writer) = server_connect(server_addr);
-        (
-            NNProtocol::offline_server_protocol(
-                &mut reader,
-                &mut writer,
-                &nn,
-                rng,
-                batch_id,
-                batch_size,
-                cores,
-                memory,
-                network_name,
-                tiled,
-                tile_size,
-            )
-            .unwrap(),
-            reader.count(),
-            writer.count(),
-        )
+        let res = match NNProtocol::offline_server_protocol(
+            &mut reader,
+            &mut writer,
+            &nn,
+            rng,
+            batch_id,
+            batch_size,
+            cores,
+            memory,
+            network_name,
+            tiled,
+            tile_size,
+        ) {
+            Ok(res) => res,
+            Err(e) => {
+                panic!("there was an error running offline server {}", e);
+            },
+        };
+        (res, reader.count(), writer.count())
     };
 
     let (_, online_read, online_write) = {
