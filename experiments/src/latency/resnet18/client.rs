@@ -50,7 +50,7 @@ fn main() {
 
     let vs = tch::nn::VarStore::new(tch::Device::cuda_if_available());
     let mut rng = ChaChaRng::from_seed(RANDOMNESS);
-    let server_addr = format!("10.128.0.33:{}", 8001 + batch_id);
+    let server_addr = format!("10.128.0.34:{}", 8001 + batch_id);
     let network = construct_resnet18_model(Some(&vs.root()), 8, &mut rng);
 
     println!(
