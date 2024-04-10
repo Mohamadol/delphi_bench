@@ -69,3 +69,6 @@ rustup install nightly-2023-06-03
 cargo +nightly-2023-06-03 build --release
 
 
+sudo apt-get install linux-tools-common linux-tools-generic linux-tools-`uname -r`
+echo 'kernel.perf_event_paranoid = 1' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
