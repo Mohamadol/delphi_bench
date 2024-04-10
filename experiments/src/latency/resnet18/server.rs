@@ -57,5 +57,19 @@ fn main() {
     );
     let server_addr = format!("0.0.0.0:{}", 8001 + batch_id);
     let network = construct_resnet18_model(Some(&vs.root()), 8, &mut rng);
-    experiments::nn_server(&server_addr, &network, &mut rng, batch_id, batch_size, cores, memory, network_name);
+
+    let tiled: bool = true;
+    let tile_size: u64 = 64 * 1024;
+    experiments::nn_server(
+        &server_addr,
+        &network,
+        &mut rng,
+        batch_id,
+        batch_size,
+        cores,
+        memory,
+        network_name,
+        tiled,
+        tile_size,
+    );
 }

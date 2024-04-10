@@ -144,6 +144,8 @@ where
         cores: u16,
         memory: u16,
         network_name: &str,
+        tiled: bool,
+        tile_size: u64,
     ) -> Result<ServerState<P>, bincode::Error> {
         let mut num_relu = 0;
         let mut num_approx = 0;
@@ -153,11 +155,14 @@ where
         let start_time = timer_start!(|| "Server offline phase");
         let linear_time = timer_start!(|| "Linear layers offline phase");
         let mut conv_id = 0;
+        let mut relus_per_layer = Vec::new();
         for (i, layer) in neural_network.layers.iter().enumerate() {
             match layer {
                 Layer::NLL(NonLinearLayer::ReLU(dims)) => {
                     let (b, c, h, w) = dims.input_dimensions();
-                    num_relu += b * c * h * w;
+                    let layer_size = b * c * h * w;
+                    num_relu += layer_size;
+                    relus_per_layer.push(layer_size);
                 },
                 Layer::NLL(NonLinearLayer::PolyApprox { dims, .. }) => {
                     let (b, c, h, w) = dims.input_dimensions();
@@ -217,7 +222,7 @@ where
         let crate::gc::ServerState {
             encoders: relu_encoders,
             output_randomizers: relu_output_randomizers,
-        } = ReluProtocol::<P>::offline_server_protocol(
+        } = ReluProtocol::<P>::offline_server_protocol::<RNG>(
             reader,
             writer,
             num_relu,
@@ -227,6 +232,9 @@ where
             cores,
             memory,
             network_name,
+            tiled,
+            tile_size,
+            &relus_per_layer,
         )?;
         timer_end!(relu_time);
 
@@ -260,6 +268,8 @@ where
         cores: u16,
         memory: u16,
         network_name: &str,
+        tiled: bool,
+        tile_size: u64,
     ) -> Result<ClientState<P>, bincode::Error> {
         let mut num_relu = 0;
         let mut num_approx = 0;
@@ -272,12 +282,15 @@ where
         let start_time = timer_start!(|| "Client offline phase");
         let linear_time = timer_start!(|| "Linear layers offline phase");
         let mut conv_id = 0;
+        let mut relus_per_layer = Vec::new();
         for (i, layer) in neural_network_architecture.layers.iter().enumerate() {
             match layer {
                 LayerInfo::NLL(dims, NonLinearLayerInfo::ReLU) => {
                     relu_layers.push(i);
                     let (b, c, h, w) = dims.input_dimensions();
-                    num_relu += b * c * h * w;
+                    let layer_size = b * c * h * w;
+                    num_relu += layer_size;
+                    relus_per_layer.push(layer_size);
                 },
                 LayerInfo::NLL(dims, NonLinearLayerInfo::PolyApprox { .. }) => {
                     approx_layers.push(i);
@@ -393,6 +406,9 @@ where
             cores,
             memory,
             network_name,
+            tiled,
+            tile_size,
+            &relus_per_layer,
         )?;
 
         let (relu_client_labels, relu_server_labels) = if num_relu != 0 {
@@ -405,14 +421,23 @@ where
                 "number of inputs unequal"
             );
 
-            let client_labels = relu_labels
-                .chunks(size_of_client_input)
-                .map(|chunk| chunk.to_vec())
-                .collect();
-            let server_labels = randomizer_labels
-                .chunks(size_of_server_input)
-                .map(|chunk| chunk.to_vec())
-                .collect();
+            // convert into 2D array where columns are encrypted values for a single ReLU, and rows are different ReLUs
+            let client_labels = if size_of_client_input > 0 {
+                relu_labels
+                    .chunks(size_of_client_input)
+                    .map(|chunk| chunk.to_vec())
+                    .collect()
+            } else {
+                Vec::new()
+            };
+            let server_labels = if size_of_server_input > 0 {
+                randomizer_labels
+                    .chunks(size_of_server_input)
+                    .map(|chunk| chunk.to_vec())
+                    .collect()
+            } else {
+                Vec::new()
+            };
 
             (client_labels, server_labels)
         } else {
@@ -430,9 +455,9 @@ where
         timer_end!(approx_time);
         timer_end!(start_time);
         Ok(ClientState {
-            relu_circuits,
-            relu_server_labels,
-            relu_client_labels,
+            relu_circuits,      // 1D GCs
+            relu_server_labels, // 2D, columns are encrypted values for a single ReLU
+            relu_client_labels, // 2D, columns are encrypted values for a single ReLU
             relu_next_layer_randomizers,
             approx_state,
             linear_randomizer: in_shares,
@@ -453,6 +478,8 @@ where
         cores: u16,
         memory: u16,
         network_name: &str,
+        tiled: bool,
+        tile_size: u64,
     ) -> Result<(), bincode::Error> {
         let (first_layer_in_dims, first_layer_out_dims) = {
             let layer = neural_network.layers.first().unwrap();
@@ -470,6 +497,7 @@ where
         let mut next_layer_derandomizer = Input::zeros(first_layer_in_dims);
         let start_time = timer_start!(|| "Server online phase");
         let mut conv_id = 0;
+        let mut relu_id = 0;
         for (i, layer) in neural_network.layers.iter().enumerate() {
             match layer {
                 Layer::NLL(NonLinearLayer::ReLU(dims)) => {
@@ -478,8 +506,13 @@ where
                     // and then send the labels over to the other party.
                     let layer_size = next_layer_input.len();
                     assert_eq!(dims.input_dimensions(), next_layer_input.dim());
-                    let layer_encoders =
-                        &state.relu_encoders[num_consumed_relus..(num_consumed_relus + layer_size)];
+
+                    //--------------------------------- only index into encoders if it was not saved to disk ---------------------------------
+                    let mut layer_encoders = state.relu_encoders.as_slice();
+                    if !tiled {
+                        layer_encoders = &state.relu_encoders
+                            [num_consumed_relus..(num_consumed_relus + layer_size)];
+                    };
                     ReluProtocol::online_server_protocol(
                         writer,
                         &next_layer_input.as_slice().unwrap(),
@@ -490,7 +523,11 @@ where
                         memory,
                         conv_id,
                         network_name,
-                    )?;
+                        tiled,
+                        tile_size,
+                        relu_id,
+                        layer_size,
+                    );
                     let relu_output_randomizers = state.relu_output_randomizers
                         [num_consumed_relus..(num_consumed_relus + layer_size)]
                         .to_vec();
@@ -500,6 +537,7 @@ where
                         .expect("shape should be correct")
                         .into();
                     timer_end!(start_time);
+                    relu_id += 1;
                 },
                 Layer::NLL(NonLinearLayer::PolyApprox { dims, poly, .. }) => {
                     let start_time = timer_start!(|| "Approx layer");
@@ -586,6 +624,8 @@ where
         cores: u16,
         memory: u16,
         network_name: &str,
+        tiled: bool,
+        tile_size: u64,
     ) -> Result<Output<FixedPoint<P>>, bincode::Error> {
         let first_layer_in_dims = {
             let layer = architecture.layers.first().unwrap();
@@ -605,6 +645,7 @@ where
         let (mut next_layer_input, _) = input.share_with_randomness(&state.linear_randomizer[&0]);
 
         let mut conv_id = 0;
+        let mut relu_id = 0;
         for (i, layer) in architecture.layers.iter().enumerate() {
             match layer {
                 LayerInfo::NLL(dims, nll_info) => {
@@ -617,44 +658,56 @@ where
                             let layer_size = next_layer_input.len();
                             assert_eq!(dims.input_dimensions(), next_layer_input.dim());
 
-                            let layer_client_labels = &state.relu_client_labels
-                                [num_consumed_relus..(num_consumed_relus + layer_size)];
-                            let layer_server_labels = &state.relu_server_labels
-                                [num_consumed_relus..(num_consumed_relus + layer_size)];
+                            let mut layer_client_labels_flat: Vec<Wire> = Vec::new();
+                            let mut layer_server_labels_flat: Vec<Wire> = Vec::new();
+                            let tmp_gcs: Vec<GarbledCircuit> = Vec::new();
+                            let mut layer_circuits: &[GarbledCircuit] = tmp_gcs.as_slice();
+                            if tiled {
+                                layer_circuits = &state.relu_circuits
+                                    [num_consumed_relus..(num_consumed_relus + layer_size)];
+
+                                let layer_client_labels = &state.relu_client_labels
+                                    [num_consumed_relus..(num_consumed_relus + layer_size)];
+                                let layer_server_labels = &state.relu_server_labels
+                                    [num_consumed_relus..(num_consumed_relus + layer_size)];
+
+                                layer_client_labels_flat = layer_client_labels
+                                    .into_iter()
+                                    .flat_map(|l| l.clone())
+                                    .collect::<Vec<_>>();
+                                layer_server_labels_flat = layer_server_labels
+                                    .into_iter()
+                                    .flat_map(|l| l.clone())
+                                    .collect::<Vec<_>>();
+                            }
+
                             let next_layer_randomizers = &state.relu_next_layer_randomizers
                                 [num_consumed_relus..(num_consumed_relus + layer_size)];
 
-                            let layer_circuits = &state.relu_circuits
-                                [num_consumed_relus..(num_consumed_relus + layer_size)];
-
-                            num_consumed_relus += layer_size;
-
-                            let layer_client_labels = layer_client_labels
-                                .into_iter()
-                                .flat_map(|l| l.clone())
-                                .collect::<Vec<_>>();
-                            let layer_server_labels = layer_server_labels
-                                .into_iter()
-                                .flat_map(|l| l.clone())
-                                .collect::<Vec<_>>();
                             let output = ReluProtocol::online_client_protocol(
                                 reader,
-                                layer_size,              // num_relus
-                                &layer_server_labels,    // Labels for layer
-                                &layer_client_labels,    // Labels for layer
-                                &layer_circuits,         // circuits for layer.
-                                &next_layer_randomizers, // circuits for layer.
+                                layer_size,                // num_relus
+                                &layer_server_labels_flat, // Labels for layer
+                                &layer_client_labels_flat, // Labels for layer
+                                &layer_circuits,           // circuits for layer.
+                                &next_layer_randomizers,   // circuits for layer.
                                 batch_id,
                                 batch_size,
                                 cores,
                                 memory,
                                 conv_id,
                                 network_name,
+                                tiled,
+                                tile_size,
+                                relu_id,
+                                layer_size,
                             )?;
                             next_layer_input = ndarray::Array1::from_iter(output)
                                 .into_shape(dims.output_dimensions())
                                 .expect("shape should be correct")
                                 .into();
+                            num_consumed_relus += layer_size;
+                            relu_id += 1;
                             timer_end!(start_time);
                         },
                         NonLinearLayerInfo::PolyApprox { poly, .. } => {

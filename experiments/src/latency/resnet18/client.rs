@@ -10,7 +10,6 @@ const RANDOMNESS: [u8; 32] = [
 ];
 
 fn main() {
-
     //--------------------------------- args ---------------------------------
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
@@ -59,6 +58,9 @@ fn main() {
         8001 + batch_id,
     );
     let architecture = (&network).into();
+
+    let tiled: bool = true;
+    let tile_size: u64 = 64 * 1024;
     experiments::latency::client::nn_client(
         &server_addr,
         architecture,
@@ -68,5 +70,7 @@ fn main() {
         cores,
         memory,
         network_name,
+        tiled,
+        tile_size,
     );
 }

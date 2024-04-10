@@ -36,6 +36,8 @@ pub fn nn_client<R: RngCore + CryptoRng>(
     cores: u16,
     memory: u16,
     network_name: &str,
+    tiled: bool,
+    tile_size: u64,
 ) {
     // Sample a random input.
     let input_dims = architecture.layers.first().unwrap().input_dimensions();
@@ -54,6 +56,8 @@ pub fn nn_client<R: RngCore + CryptoRng>(
         cores,
         memory,
         network_name,
+        tiled,
+        tile_size,
     );
 }
 
@@ -105,7 +109,7 @@ fn cg_helper<R: RngCore + CryptoRng>(
                             1,
                             1,
                             1,
-                            8, 
+                            8,
                             8,
                             "",
                         )

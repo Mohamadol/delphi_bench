@@ -59,6 +59,7 @@ pub struct ServerOfflineNonLinear {
     encoding: u64,
     OT_communication: u64,
     GC_communication: u64,
+    IO_write: u64,
     total_duration: u64,
 }
 
@@ -66,6 +67,7 @@ pub struct ServerOfflineNonLinear {
 pub struct ClientOfflineNonLinear {
     OT_communication: u64,
     GC_communication: u64,
+    IO_write: u64,
     total_duration: u64,
 }
 
@@ -86,6 +88,7 @@ pub struct ClientOnlineLinear {
 pub struct ServerOnlineNonLinear {
     encoding: u64,
     communication: u64,
+    IO_read: u64,
     total_duration: u64,
 }
 
@@ -93,6 +96,7 @@ pub struct ServerOnlineNonLinear {
 pub struct ClientOnlineNonLinear {
     GC_eval: u64,
     communication: u64,
+    IO_read: u64,
     total_duration: u64,
 }
 
