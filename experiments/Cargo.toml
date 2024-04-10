@@ -80,21 +80,21 @@ path = "src/lib.rs"
 #name = "mnist-server"
 #path = "src/latency/mnist/server.rs"
 
-#[[bin]]
-#name = "cg-client"
-#path = "src/latency/cg/client.rs"
-#
-#[[bin]]
-#name = "cg-server"
-#path = "src/latency/cg/server.rs"
-#
-#[[bin]]
-#name = "gc-client"
-#path = "src/latency/gc/client.rs"
-#
-#[[bin]]
-#name = "gc-server"
-#path = "src/latency/gc/server.rs"
+[[bin]]
+name = "cg-client"
+path = "src/latency/cg/client.rs"
+
+[[bin]]
+name = "cg-server"
+path = "src/latency/cg/server.rs"
+
+[[bin]]
+name = "gc-client"
+path = "src/latency/gc/client.rs"
+
+[[bin]]
+name = "gc-server"
+path = "src/latency/gc/server.rs"
 
 [features]
 default = [ "timer" ]
@@ -115,11 +115,3 @@ path = "src/latency/resnet18/server.rs"
 [[bin]]
 name = "resnet18-client"
 path = "src/latency/resnet18/client.rs"
-
-[[bin]]
-name = "test-3layers-server"
-path = "src/latency/test_3layers/server.rs"
-
-[[bin]]
-name = "test-3layers-client"
-path = "src/latency/test_3layers/client.rs"

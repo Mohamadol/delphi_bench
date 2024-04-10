@@ -23,17 +23,16 @@ use std::{
     time::Duration,
 };
 
-// pub mod inference;
+pub mod inference;
 pub mod latency;
 pub mod linear_only;
-// pub mod minionn;
-// pub mod mnist;
+pub mod minionn;
+pub mod mnist;
 pub mod resnet18;
 pub mod resnet32;
 pub mod resnet50;
-pub mod test_3layers;
-// pub mod throughput;
-// pub mod validation;
+pub mod throughput;
+pub mod validation;
 
 pub struct TenBitExpParams {}
 
@@ -133,8 +132,6 @@ pub fn nn_client<R: RngCore + CryptoRng>(
     cores: u16,
     memory: u16,
     network_name: &str,
-    tiled: bool,
-    tile_size: u64,
 ) -> Input<TenBitExpFP> {
     let (client_state, offline_read, offline_write) = {
         let (mut reader, mut writer) = client_connect(server_addr);
@@ -149,8 +146,6 @@ pub fn nn_client<R: RngCore + CryptoRng>(
                 cores,
                 memory,
                 network_name,
-                tiled,
-                tile_size,
             )
             .unwrap(),
             reader.count(),
@@ -172,8 +167,6 @@ pub fn nn_client<R: RngCore + CryptoRng>(
                 cores,
                 memory,
                 network_name,
-                tiled,
-                tile_size,
             )
             .unwrap(),
             reader.count(),
@@ -191,24 +184,10 @@ pub fn nn_client<R: RngCore + CryptoRng>(
         writes: online_write,
     };
 
-    let offline_communication_file = csv_file_name_network(
-        network_name,
-        "client",
-        "offline",
-        batch_id as u64,
-        batch_size as u64,
-        cores as u64,
-        memory as u64,
-    );
-    let online_communication_file = csv_file_name_network(
-        network_name,
-        "client",
-        "online",
-        batch_id as u64,
-        batch_size as u64,
-        cores as u64,
-        memory as u64,
-    );
+    let offline_communication_file =
+        csv_file_name_network(network_name, "client", "offline", batch_id as u64, batch_size as u64, cores as u64, memory as u64);
+    let online_communication_file =
+        csv_file_name_network(network_name, "client", "online", batch_id as u64, batch_size as u64, cores as u64, memory as u64);
     write_to_csv(&offline_communication, &offline_communication_file);
     write_to_csv(&online_communication, &online_communication_file);
 
@@ -232,26 +211,12 @@ pub fn nn_server<R: RngCore + CryptoRng>(
     cores: u16,
     memory: u16,
     network_name: &str,
-    tiled: bool,
-    tile_size: u64,
 ) {
     let (server_state, offline_read, offline_write) = {
         let (mut reader, mut writer) = server_connect(server_addr);
         (
-            NNProtocol::offline_server_protocol(
-                &mut reader,
-                &mut writer,
-                &nn,
-                rng,
-                batch_id,
-                batch_size,
-                cores,
-                memory,
-                network_name,
-                tiled,
-                tile_size,
-            )
-            .unwrap(),
+            NNProtocol::offline_server_protocol(&mut reader, &mut writer, &nn, rng, batch_id, batch_size, cores, memory, network_name)
+                .unwrap(),
             reader.count(),
             writer.count(),
         )
@@ -270,8 +235,6 @@ pub fn nn_server<R: RngCore + CryptoRng>(
                 cores,
                 memory,
                 network_name,
-                tiled,
-                tile_size,
             )
             .unwrap(),
             reader.count(),
@@ -288,24 +251,10 @@ pub fn nn_server<R: RngCore + CryptoRng>(
         reads: online_read,
         writes: online_write,
     };
-    let offline_communication_file = csv_file_name_network(
-        network_name,
-        "server",
-        "offline",
-        batch_id as u64,
-        batch_size as u64,
-        cores as u64,
-        memory as u64,
-    );
-    let online_communication_file = csv_file_name_network(
-        network_name,
-        "server",
-        "online",
-        batch_id as u64,
-        batch_size as u64,
-        cores as u64,
-        memory as u64,
-    );
+    let offline_communication_file =
+        csv_file_name_network(network_name, "server", "offline", batch_id as u64, batch_size as u64, cores as u64, memory as u64);
+    let online_communication_file =
+        csv_file_name_network(network_name, "server", "online", batch_id as u64, batch_size as u64, cores as u64, memory as u64);
     write_to_csv(&offline_communication, &offline_communication_file);
     write_to_csv(&online_communication, &online_communication_file);
 
