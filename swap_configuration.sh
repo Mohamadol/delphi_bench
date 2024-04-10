@@ -6,4 +6,4 @@ sudo swapon /mnt/mohammad/swap/swapfile
 echo '/mnt/mohammad/swap/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 sudo swapon --show
 getconf PAGESIZE
-sudo sysctl vm.swappiness=10
+sudo sysctl vm.swappiness=90
