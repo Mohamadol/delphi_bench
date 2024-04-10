@@ -987,17 +987,17 @@ where
             let mut tile_server_input_wires = if !tiled {
                 server_input_wires
             } else {
-                &evaluator_offline_data.server_randomizer_labels[start_index..end_index]
+                &evaluator_offline_data.server_randomizer_labels
             };
             let mut tile_client_input_wires = if !tiled {
                 client_input_wires
             } else {
-                &evaluator_offline_data.client_input_labels[start_index..end_index]
+                &evaluator_offline_data.client_input_labels
             };
             let mut tile_evaluators = if !tiled {
                 evaluators
             } else {
-                &evaluator_offline_data.gc_s[start_index..end_index]
+                &evaluator_offline_data.gc_s
             };
             let mut tiled_next_layer_randomizers = if !tiled {
                 next_layer_randomizers

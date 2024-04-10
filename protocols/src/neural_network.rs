@@ -415,11 +415,13 @@ where
             let size_of_client_input = relu_labels.len() / num_relu;
             let size_of_server_input = randomizer_labels.len() / num_relu;
 
-            assert_eq!(
-                size_of_client_input,
-                ReluProtocol::<P>::size_of_client_inputs(),
-                "number of inputs unequal"
-            );
+            if !tiled {
+                assert_eq!(
+                    size_of_client_input,
+                    ReluProtocol::<P>::size_of_client_inputs(),
+                    "number of inputs unequal"
+                );
+            }
 
             // convert into 2D array where columns are encrypted values for a single ReLU, and rows are different ReLUs
             let client_labels = if size_of_client_input > 0 {
@@ -662,7 +664,7 @@ where
                             let mut layer_server_labels_flat: Vec<Wire> = Vec::new();
                             let tmp_gcs: Vec<GarbledCircuit> = Vec::new();
                             let mut layer_circuits: &[GarbledCircuit] = tmp_gcs.as_slice();
-                            if tiled {
+                            if !tiled {
                                 layer_circuits = &state.relu_circuits
                                     [num_consumed_relus..(num_consumed_relus + layer_size)];
 
