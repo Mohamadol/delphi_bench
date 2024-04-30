@@ -793,13 +793,13 @@ where
             }
 
             //--------------------------------- offseting the tile input data ---------------------------------
-            let tile_encoders = if tiled {
-                garbler_offline_data.encoders.as_slice()
+            let tile_encoders = if !tiled {
+                &encoders
             } else {
-                &encoders[start_index..end_index]
+                garbler_offline_data.encoders.as_slice()
             };
             let tile_shares = if !tiled {
-                shares
+                &shares
             } else {
                 &shares[start_index..end_index]
             };
@@ -830,20 +830,10 @@ where
             timing.communication += server_communication_time.elapsed().as_micros() as u64;
             timer_end!(send_time);
             comm.encoded_labels_write = writer.count() - w_before; // GC writes in bytes
-            if chunk_index != relu_chunks - 1 && tiled {
-                match rx.recv() {
-                    Ok(next_garbler_offline_data) => {
-                        garbler_offline_data = next_garbler_offline_data
-                    },
-                    Err(e) => {
-                        panic!("there was an issue when pre-fetching garbler data: {}", e)
-                    },
-                }
-            }
 
             //--------------------------------- wait until offline_data of next iteration is ready ---------------------------------
             let io_duration_instance = Instant::now();
-            if chunk_index != relu_chunks - 1 {
+            if chunk_index != relu_chunks - 1 && tiled {
                 match rx.recv() {
                     Ok(next_garbler_offline_data) => {
                         garbler_offline_data = next_garbler_offline_data
