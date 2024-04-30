@@ -10,6 +10,7 @@ const RANDOMNESS: [u8; 32] = [
 ];
 
 fn main() {
+    //--------------------------------- args ---------------------------------
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
         eprintln!("Usage: {} <number>", args[0]);
@@ -22,10 +23,33 @@ fn main() {
             std::process::exit(1);
         },
     };
+    let network_name = &args[2];
+    let cores = match args[3].parse::<u16>() {
+        Ok(number) => number,
+        Err(e) => {
+            eprintln!("Error: Argument is not a valid integer - {}", e);
+            std::process::exit(1);
+        },
+    };
+    let memory = match args[4].parse::<u16>() {
+        Ok(number) => number,
+        Err(e) => {
+            eprintln!("Error: Argument is not a valid integer - {}", e);
+            std::process::exit(1);
+        },
+    };
+    let batch_size = match args[5].parse::<u16>() {
+        Ok(number) => number,
+        Err(e) => {
+            eprintln!("Error: Argument is not a valid integer - {}", e);
+            std::process::exit(1);
+        },
+    };
+    //------------------------------------------------------------------
 
     let vs = tch::nn::VarStore::new(tch::Device::cuda_if_available());
     let mut rng = ChaChaRng::from_seed(RANDOMNESS);
-    let server_addr = format!("10.128.0.10:{}", 8001 + batch_id);
+    let server_addr = format!("10.128.0.38:{}", 8001 + batch_id);
     let network = construct_resnet50_model(Some(&vs.root()), 8, &mut rng);
 
     println!(
@@ -34,12 +58,19 @@ fn main() {
         8001 + batch_id,
     );
     let architecture = (&network).into();
-    let network_name = "resnet50";
+
+    let tiled: bool = true;
+    let tile_size: u64 = 100000/8; //cifar10
     experiments::latency::client::nn_client(
         &server_addr,
         architecture,
         &mut rng,
         batch_id,
+        batch_size,
+        cores,
+        memory,
         network_name,
+        tiled,
+        tile_size,
     );
 }

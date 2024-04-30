@@ -1,0 +1,43 @@
+sending client request for batch ID 3 and port 8004
+Start:   Generating keys
+End:     Generating keys............................................................500.366ms
+Start:   Sending keys
+End:     Sending keys...............................................................281.823ms
+Start:   Client offline phase
+··Start:   Linear layers offline phase
+····Start:   Linear offline protocol
+······Start:   Client preprocessing
+······End:     Client preprocessing.................................................280.187ms
+······Start:   Sending input
+······End:     Sending input........................................................41.62ms
+······Start:   Receiving Result
+······End:     Receiving Result.....................................................16.826s
+······Start:   Post-processing
+······End:     Post-processing......................................................62.973ms
+····End:     Linear offline protocol................................................17.210s
+····Start:   Linear offline protocol
+······Start:   Client preprocessing
+······End:     Client preprocessing.................................................2.473s
+······Start:   Sending input
+······End:     Sending input........................................................2.921s
+······Start:   Receiving Result
+······End:     Receiving Result.....................................................71.754s
+······Start:   Post-processing
+······End:     Post-processing......................................................64.9ms
+····End:     Linear offline protocol................................................77.214s
+····Start:   Linear offline protocol
+······Start:   Client preprocessing
+······End:     Client preprocessing.................................................195.76ms
+······Start:   Sending input
+······End:     Sending input........................................................40.303ms
+······Start:   Receiving Result
+······End:     Receiving Result.....................................................65.551s
+······Start:   Post-processing
+······End:     Post-processing......................................................245.87ms
+····End:     Linear offline protocol................................................66.32s
+····Start:   Linear offline protocol
+······Start:   Client preprocessing
+······End:     Client preprocessing.................................................1.2s
+······Start:   Sending input
+······End:     Sending input........................................................616.310ms
+······Start:   Receiving Result
