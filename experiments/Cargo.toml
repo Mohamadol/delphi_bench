@@ -100,13 +100,13 @@ path = "src/lib.rs"
 default = [ "timer" ]
 timer = [ "protocols/timer" ]
 
-#[[bin]]
-#name = "resnet50-server"
-#path = "src/latency/resnet50/server.rs"
+[[bin]]
+name = "resnet50-server"
+path = "src/latency/resnet50/server.rs"
 
-#[[bin]]
-#name = "resnet50-client"
-#path = "src/latency/resnet50/client.rs"
+[[bin]]
+name = "resnet50-client"
+path = "src/latency/resnet50/client.rs"
 
 [[bin]]
 name = "resnet18-server"

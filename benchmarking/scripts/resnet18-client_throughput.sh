@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ---------- configure ----------
-BATCH=8
+BATCH=1
 MEMORY=30
 CORES=8
 network="resnet18"

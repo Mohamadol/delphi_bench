@@ -59,8 +59,8 @@ fn main() {
     );
     let architecture = (&network).into();
 
-    let tiled: bool = true;
-    let tile_size: u64 = 100000/8; //cifar10
+    let tiled: bool = false;
+    let tile_size: u64 = 400000; //cifar10
     experiments::latency::client::nn_client(
         &server_addr,
         architecture,
