@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ---------- configure ----------
-BATCH=8
+BATCH=6
 MEMORY=30
 CORES=8
 network="resnet18"
@@ -16,7 +16,7 @@ mkdir -p $OUTDIR
 mkdir -p $DATADIR
 
 # ---------- run memory monitor ----------
-/mnt/mohammad/delphi_bench/benchmarking/scripts/memory_monitor.sh "${DATA_DIR}/memory_usage.csv" &
+/mnt/mohammad/delphi_bench/benchmarking/scripts/memory_monitor.sh "${DATADIR}/memory_usage.csv" &
 MEM_pid="$!"
 
 # ---------- run batches of server programs ----------
