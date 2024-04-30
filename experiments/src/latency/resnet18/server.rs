@@ -59,7 +59,7 @@ fn main() {
     let network = construct_resnet18_model(Some(&vs.root()), 8, &mut rng);
 
     let tiled: bool = true;
-    let tile_size: u64 =  349525/8; //cifar10
+    let tile_size: u64 =  100000/8; //cifar10
     experiments::nn_server(
         &server_addr,
         &network,
