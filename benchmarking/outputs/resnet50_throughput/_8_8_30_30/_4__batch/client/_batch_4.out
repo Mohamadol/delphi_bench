@@ -1,0 +1,33 @@
+sending client request for batch ID 4 and port 8005
+Start:   Generating keys
+End:     Generating keys............................................................485.363ms
+Start:   Sending keys
+End:     Sending keys...............................................................277.41ms
+Start:   Client offline phase
+··Start:   Linear layers offline phase
+····Start:   Linear offline protocol
+······Start:   Client preprocessing
+······End:     Client preprocessing.................................................257.919ms
+······Start:   Sending input
+······End:     Sending input........................................................42.483ms
+······Start:   Receiving Result
+······End:     Receiving Result.....................................................16.833s
+······Start:   Post-processing
+······End:     Post-processing......................................................61.248ms
+····End:     Linear offline protocol................................................17.195s
+····Start:   Linear offline protocol
+······Start:   Client preprocessing
+······End:     Client preprocessing.................................................2.470s
+······Start:   Sending input
+······End:     Sending input........................................................2.687s
+······Start:   Receiving Result
+······End:     Receiving Result.....................................................71.387s
+······Start:   Post-processing
+······End:     Post-processing......................................................63.842ms
+····End:     Linear offline protocol................................................76.609s
+····Start:   Linear offline protocol
+······Start:   Client preprocessing
+······End:     Client preprocessing.................................................202.182ms
+······Start:   Sending input
+······End:     Sending input........................................................40.242ms
+······Start:   Receiving Result

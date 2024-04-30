@@ -1,0 +1,33 @@
+sending client request for batch ID 1 and port 8002
+Start:   Generating keys
+End:     Generating keys............................................................486.717ms
+Start:   Sending keys
+End:     Sending keys...............................................................280.518ms
+Start:   Client offline phase
+··Start:   Linear layers offline phase
+····Start:   Linear offline protocol
+······Start:   Client preprocessing
+······End:     Client preprocessing.................................................266.599ms
+······Start:   Sending input
+······End:     Sending input........................................................42.260ms
+······Start:   Receiving Result
+······End:     Receiving Result.....................................................16.888s
+······Start:   Post-processing
+······End:     Post-processing......................................................61.888ms
+····End:     Linear offline protocol................................................17.259s
+····Start:   Linear offline protocol
+······Start:   Client preprocessing
+······End:     Client preprocessing.................................................2.467s
+······Start:   Sending input
+······End:     Sending input........................................................2.823s
+······Start:   Receiving Result
+······End:     Receiving Result.....................................................71.495s
+······Start:   Post-processing
+······End:     Post-processing......................................................62.906ms
+····End:     Linear offline protocol................................................76.850s
+····Start:   Linear offline protocol
+······Start:   Client preprocessing
+······End:     Client preprocessing.................................................208.929ms
+······Start:   Sending input
+······End:     Sending input........................................................41.189ms
+······Start:   Receiving Result
