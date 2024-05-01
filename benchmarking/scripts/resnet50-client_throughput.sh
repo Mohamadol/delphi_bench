@@ -2,8 +2,8 @@
 
 # ---------- configure ----------
 BATCH=1
-MEMORY=30
-CORES=8
+MEMORY=60
+CORES=16
 network="resnet50"
 EXTRA="_throughput"
 EXP_NAME="${network}${EXTRA}"
