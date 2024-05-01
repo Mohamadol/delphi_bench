@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # ---------- configure ----------
-BATCH=1
-MEMORY=30
-CORES=8
+BATCH=16
+MEMORY=60
+CORES=16
 network="resnet18"
 EXTRA="_throughput"
 EXP_NAME="${network}${EXTRA}"
