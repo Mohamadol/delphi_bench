@@ -58,8 +58,9 @@ fn main() {
     let server_addr = format!("0.0.0.0:{}", 8001 + batch_id);
     let network = construct_resnet18_model(Some(&vs.root()), 8, &mut rng);
 
-    let tiled: bool = true;
-    let tile_size: u64 =  100000/8; //cifar10
+    let tiled: bool = false;
+    // let tile_size: u64 = 100000 / 8; //cifar10
+    let tile_size: u64 = 500000; //cifar10
     experiments::nn_server(
         &server_addr,
         &network,
