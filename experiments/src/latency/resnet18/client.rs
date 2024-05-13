@@ -49,7 +49,7 @@ fn main() {
 
     let vs = tch::nn::VarStore::new(tch::Device::cuda_if_available());
     let mut rng = ChaChaRng::from_seed(RANDOMNESS);
-    let server_addr = format!("10.128.0.38:{}", 8001 + batch_id);
+    let server_addr = format!("10.128.0.51:{}", 8001 + batch_id);
     let network = construct_resnet18_model(Some(&vs.root()), 8, &mut rng);
 
     println!(
@@ -60,7 +60,7 @@ fn main() {
     let architecture = (&network).into();
 
     let tiled: bool = false;
-    let tile_size: u64 = 400000; //cifar10
+    let tile_size: u64 = 500000; //cifar10
     experiments::latency::client::nn_client(
         &server_addr,
         architecture,
