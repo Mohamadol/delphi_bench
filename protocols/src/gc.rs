@@ -755,9 +755,9 @@ where
             let start_index = relu_chunk_size * chunk_index;
             let end_index = start_index + current_chunk_size;
 
+            let mut server_IO_read_instance = Instant::now();
             //--------------------------------- loading the state tile ---------------------------------
             if tiled {
-                let server_IO_read_instance = Instant::now();
                 if chunk_index == 0 {
                     // if first tile, load the data
                     let file_name = tiling::get_file_name(
@@ -789,7 +789,6 @@ where
                             .expect("Failed to send garbler offline tile to main thread");
                     });
                 }
-                timing.IO_read += server_IO_read_instance.elapsed().as_micros() as u64;
             }
 
             //--------------------------------- offseting the tile input data ---------------------------------
@@ -803,6 +802,9 @@ where
             } else {
                 &shares[start_index..end_index]
             };
+            
+            timing.IO_read += server_IO_read_instance.elapsed().as_micros() as u64;
+
 
             //--------------------------------- encoding ---------------------------------
             let encoding_time = timer_start!(|| "Encoding inputs");
@@ -832,7 +834,7 @@ where
             comm.encoded_labels_write = writer.count() - w_before; // GC writes in bytes
 
             //--------------------------------- wait until offline_data of next iteration is ready ---------------------------------
-            let io_duration_instance = Instant::now();
+            server_IO_read_instance = Instant::now();
             if chunk_index != relu_chunks - 1 && tiled {
                 match rx.recv() {
                     Ok(next_garbler_offline_data) => {
@@ -843,7 +845,7 @@ where
                     },
                 }
             }
-            timing.IO_read += io_duration_instance.elapsed().as_micros() as u64;
+            timing.IO_read += server_IO_read_instance.elapsed().as_micros() as u64;
         }
 
         //--------------------------------- save profiling data ---------------------------------
@@ -937,9 +939,9 @@ where
             let start_index = relu_chunk_size * chunk_index;
             let end_index = start_index + current_chunk_size;
 
+            let mut server_IO_read_instance = Instant::now();
             //--------------------------------- loading the state tile ---------------------------------
             if tiled {
-                let server_IO_read_instance = Instant::now();
                 if chunk_index == 0 {
                     let file_name = tiling::get_file_name(
                         "/mnt/mohammad/delphi_bench",
@@ -970,7 +972,6 @@ where
                             .expect("Failed to send tile to main thread");
                     });
                 }
-                timing.IO_read += server_IO_read_instance.elapsed().as_micros() as u64;
             }
 
             //--------------------------------- offseting the tile input data ---------------------------------
@@ -994,6 +995,8 @@ where
             } else {
                 &next_layer_randomizers[start_index..end_index]
             };
+            timing.IO_read += server_IO_read_instance.elapsed().as_micros() as u64;
+
 
             //--------------------------------- communication ---------------------------------
             r_before = reader.count(); // communication done so far
@@ -1041,20 +1044,23 @@ where
                 .iter_mut()
                 .zip(tiled_next_layer_randomizers)
                 .for_each(|(s, r)| *s = FixedPoint::<P>::randomize_local_share(s, r));
-            timing.GC_eval += gc_eval_time.elapsed().as_micros() as u64;
-            timer_end!(eval_time);
 
             //--------------------------------- stage the result for return as the products ---------------------------------
             results.extend(tile_results);
 
+            timing.GC_eval += gc_eval_time.elapsed().as_micros() as u64;
+            timer_end!(eval_time);
+
             //--------------------------------- wait until offline_data of next iteration is ready ---------------------------------
             if tiled && chunk_index != relu_chunks - 1 {
+                server_IO_read_instance = Instant::now();
                 match rx.recv() {
                     Ok(next_evaluator_offline_data) => {
                         evaluator_offline_data = next_evaluator_offline_data
                     },
                     Err(e) => panic!("there was an issue when pre-fetching client state: {}", e), // Exit the loop if there are no more tiles to process.
                 }
+                timing.IO_read += server_IO_read_instance.elapsed().as_micros() as u64;
             }
         }
 
