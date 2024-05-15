@@ -305,7 +305,7 @@ where
             let total_time = Instant::now();
 
             //--------------------------------- tiling details ---------------------------------
-            let tiling_configuration = tiling::configure_tiling(relus.clone(), tile_size as usize);
+            let tiling_configuration = tiling::configure_tiling(relus.clone(), tile_size as usize, tiled);
             let relu_chunk_size = tiling_configuration.relu_chunk_size;
             let relu_chunks = tiling_configuration.relu_chunks;
             let leftovers = tiling_configuration.leftovers;
@@ -313,9 +313,12 @@ where
 
             //--------------------------------- tile-wise processing ---------------------------------
             for chunk_index in 0..relu_chunks {
-                let current_chunk_size = match chunk_index {
-                    x if x == relu_chunks - 1 && leftovers != 0 => leftovers,
-                    _ => relu_chunk_size,
+                let current_chunk_size = match tiled{
+                    false => relus.clone(),
+                    true => match chunk_index {
+                        x if x == relu_chunks - 1 && leftovers != 0 => leftovers,
+                        _ => relu_chunk_size,
+                    },
                 };
                 let start_index = relu_chunk_size * chunk_index;
                 let end_index = start_index + current_chunk_size;
@@ -544,7 +547,7 @@ where
             let field_size = crypto_primitives::gc::num_bits(p);
 
             //--------------------------------- tiling details ---------------------------------
-            let tiling_configuration = tiling::configure_tiling(relus.clone(), tile_size as usize);
+            let tiling_configuration = tiling::configure_tiling(relus.clone(), tile_size as usize, tiled);
             let relu_chunk_size = tiling_configuration.relu_chunk_size;
             let relu_chunks = tiling_configuration.relu_chunks;
             let leftovers = tiling_configuration.leftovers;
@@ -552,10 +555,15 @@ where
 
             //--------------------------------- tile-wise processing ---------------------------------
             for chunk_index in 0..relu_chunks {
-                let current_chunk_size = match chunk_index {
-                    x if x == relu_chunks - 1 && leftovers != 0 => leftovers,
-                    _ => relu_chunk_size,
+
+                let current_chunk_size = match tiled{
+                    false => relus.clone(),
+                    true => match chunk_index {
+                        x if x == relu_chunks - 1 && leftovers != 0 => leftovers,
+                        _ => relu_chunk_size,
+                    },
                 };
+
                 let start_index = relu_chunk_size * chunk_index;
                 let end_index = start_index + current_chunk_size;
 
@@ -735,7 +743,7 @@ where
         let p = u128::from(u64::from(P::Field::characteristic()));
 
         //--------------------------------- tiling details ---------------------------------
-        let tiling_configuration = tiling::configure_tiling(relus, tile_size as usize);
+        let tiling_configuration = tiling::configure_tiling(relus, tile_size as usize, tiled);
         let relu_chunk_size = tiling_configuration.relu_chunk_size;
         let relu_chunks = tiling_configuration.relu_chunks;
         let leftovers = tiling_configuration.leftovers;
@@ -748,9 +756,12 @@ where
 
         //--------------------------------- tile-wise processing ---------------------------------
         for chunk_index in 0..relu_chunks {
-            let current_chunk_size = match chunk_index {
-                x if x == relu_chunks - 1 && leftovers != 0 => leftovers,
-                _ => relu_chunk_size,
+            let current_chunk_size = match tiled{
+                false => relus.clone(),
+                true => match chunk_index {
+                    x if x == relu_chunks - 1 && leftovers != 0 => leftovers,
+                    _ => relu_chunk_size,
+                },
             };
             let start_index = relu_chunk_size * chunk_index;
             let end_index = start_index + current_chunk_size;
@@ -918,7 +929,7 @@ where
         let total_time = Instant::now();
 
         //--------------------------------- tiling details ---------------------------------
-        let tiling_configuration = tiling::configure_tiling(relus, tile_size as usize);
+        let tiling_configuration = tiling::configure_tiling(relus, tile_size as usize, tiled);
         let relu_chunk_size = tiling_configuration.relu_chunk_size;
         let relu_chunks = tiling_configuration.relu_chunks;
         let leftovers = tiling_configuration.leftovers;
@@ -932,9 +943,12 @@ where
 
         //--------------------------------- tile-wise processing ---------------------------------
         for chunk_index in 0..relu_chunks {
-            let current_chunk_size = match chunk_index {
-                x if x == relu_chunks - 1 && leftovers != 0 => leftovers,
-                _ => relu_chunk_size,
+            let current_chunk_size = match tiled{
+                false => relus.clone(),
+                true => match chunk_index {
+                    x if x == relu_chunks - 1 && leftovers != 0 => leftovers,
+                    _ => relu_chunk_size,
+                },
             };
             let start_index = relu_chunk_size * chunk_index;
             let end_index = start_index + current_chunk_size;

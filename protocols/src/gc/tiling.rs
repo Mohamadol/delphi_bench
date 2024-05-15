@@ -11,17 +11,25 @@ pub struct tile_config {
     pub leftovers: usize,
 }
 
-pub fn configure_tiling(relus: usize, memory_capacity: usize) -> tile_config {
-    let relu_chunk_size = std::cmp::min(memory_capacity, relus);
-    let mut relu_chunks = relus / relu_chunk_size;
-    let leftovers = relus % relu_chunk_size;
-    if leftovers != 0 {
-        relu_chunks += 1;
-    }
-    tile_config {
-        relu_chunks: relu_chunks as usize,
-        relu_chunk_size: relu_chunk_size as usize,
-        leftovers: leftovers as usize,
+pub fn configure_tiling(relus: usize, memory_capacity: usize, tiled:bool) -> tile_config {
+    if tiled{
+        let relu_chunk_size = std::cmp::min(memory_capacity, relus);
+        let mut relu_chunks = relus / relu_chunk_size;
+        let leftovers = relus % relu_chunk_size;
+        if leftovers != 0 {
+            relu_chunks += 1;
+        }
+        return tile_config {
+            relu_chunks: relu_chunks as usize,
+            relu_chunk_size: relu_chunk_size as usize,
+            leftovers: leftovers as usize,
+        };
+    }else{
+        return tile_config {
+            relu_chunks: 1 as usize,
+            relu_chunk_size: relus as usize,
+            leftovers: 0 as usize,
+        };
     }
 }
 
