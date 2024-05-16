@@ -2,10 +2,10 @@
 
 # ---------- configure ----------
 BATCH=1
-MEMORY=30
-CORES=8
+MEMORY=120
+CORES=32
 network="resnet18"
-EXTRA="_latency"
+EXTRA="_latency2"
 EXP_NAME="${network}${EXTRA}"
 
 # ---------- init directories ----------
